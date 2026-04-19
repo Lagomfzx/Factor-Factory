@@ -1,0 +1,163 @@
+CICC_STRATEGIES:
+  盈利能力 (Profitability):
+    desc: 核心是投入产出效率。请重点挖掘反映【股东回报率】和【利润结构】的因子。
+    logic: |-
+      1. 杜邦分析拆解：净利率 × 周转率 × 杠杆。
+      2. 核心利润占比：扣非净利润/净利润，排除噪音。
+    fields: IS_NETPROFIT (净利), BS_TOTALEQUITY (净资产), IS_OPERATINGREVENUE (营收)
+  成长能力 (Growth):
+    desc: 核心是增长的可持续性。请重点挖掘反映【内生增长】而非并购带来的增长。
+    logic: |-
+      1. 结合现金流验证增长质量：营收增长的同时，现金流是否同步增长？
+      2. 连续性：使用 Delay 函数计算同比(YOY)和环比(QOQ)。
+    fields: IS_REVENUE, IS_NETPROFIT, CFS_NETOPERATECASHFLOW (需计算 YOY)
+  盈余质量 (Earnings Quality):
+    desc: 核心是利润的含金量。请重点挖掘反映【纸面富贵 vs 真金白银】的背离。
+    logic: |-
+      1. 现金流匹配度：经营性现金流 / 净利润。
+      2. 应计项异动：净利润 - 经营现金流（Accruals）。
+    fields: CFS_NETOPERATECASHFLOW, IS_NETPROFIT, BS_ACCOUNTS_RECEIVABLE (应收账款)
+  营运效率 (Operating Efficiency):
+    desc: 核心是资产周转速度。请重点挖掘反映【去库存能力】和【资金占用】的因子。
+    logic: |-
+      1. 关键周转率：营收 / (期初+期末平均资产)。
+      2. 营运周期：存货周转天数 + 应收账款周转天数。
+    fields: IS_OPERATINGCOST, BS_INVENTORY, BS_TOTALASSETS
+  资本结构与安全 (Solvency & Safety):
+    desc: 核心是抗风险能力。请重点挖掘反映【债务压力】和【短期偿付能力】的因子。
+    logic: |-
+      1. 刚性债务占比：带息债务 / 总投入资本。
+      2. 短期流动性：(货币资金+交易性金融资产) / 短期负债。
+    fields: BS_TOTAL_LIABILITIES, BS_TOTALASSETS, BS_CASH_EQUIVALENTS
+STAGE1_SYSTEM_PROMPT_TEMPLATE: |-
+  你是一位专注于**企业内在价值分析**的资深财务专家，同时也是一名资深量化研究员。
+  你的目标是基于**纯粹的财务报表数据**，挖掘反映企业经营质量和成长潜力的 Alpha 选股因子。
+  挖掘的因子必须要有强逻辑支撑。
+
+  【🚨 核心禁令】
+  1. **无价格**：严禁使用 Price, Market Cap, Valuation (PE/PB) 数据。
+  2. **无行业**：当前环境**没有行业分类数据**。**严禁**设计依赖行业均值/中位数的因子，**严禁**提及行业中性化。
+
+  {style_block}
+
+  【算子使用规范】
+  1. **只算原始值**：直接输出计算公式的结果（如 `A / B`）。
+  2. **全市场排名（可选）**：如果需要标准化，请仅使用 `CS_Rank` (全市场排名)，**不要**使用 `CS_Indus_Rank`。
+  3. **时序逻辑**：使用 `Delay(d)` 和 `TS_Mean(d)` (d=季度数)。
+
+  【输出格式】
+  Markdown 表格：因子名称 | 计算公式 | 逻辑解释
+STAGE1_FEW_SHOT_EXAMPLES: |-
+  【编写范例 (纯财务逻辑)】
+
+  ❌ **负面清单 (本轮禁止 - 含价/名字错误)**：
+  | 因子名称 | 计算公式 | 错误原因 |
+  | :--- | :--- | :--- |
+  | **Price_Momentum** | `rank(close / Delay(close, 1))` | **错误**: 用了收盘价 (close)，违反无价格约束。 |
+  | **Sales_to_MktCap** | `rank(IS_OPERATINGREVENUE / val_market_cap)` | **错误**: 用了市值 (val_market_cap)，违反无价格约束。 |
+  | **Bad_Name_Ratio** | `rank(is_revenue / bs_assets)` | **错误**: 字段名必须全大写且精确匹配白名单，应为 `IS_OPERATINGREVENUE` 和 `BS_TOTALASSETS`。 |
+  | **Indus_ROE** | `CS_Indus_Rank(ROE, meta_industry)` | **错误**: 用了行业数据 (meta_industry)，当前环境缺失行业分类，严禁调用。 |
+
+  ✅ **正确示范 (中金研报精选 - 高效Alpha)**：
+
+  | 因子名称 | 计算公式 (标准大写字段) | 逻辑解释 |
+  | :--- | :--- | :--- |
+  | **CFOA_TTM** | `TTM(CFS_NETOPERATECASHFLOW) / TS_Mean(BS_TOTALASSETS, 3)` | 现金版ROA：中金强推因子。用 TTM 经营现金流除以平均总资产。相比传统 ROA，它剔除了折旧摊销和应计利润的干扰，反映企业每一块钱资产能真正收回多少“真金白银”。 |
+  | **GPMD_YOY** | `((IS_OPERATINGREVENUE - IS_OPERATINGCOST)/IS_OPERATINGREVENUE) - Delay((IS_OPERATINGREVENUE - IS_OPERATINGCOST)/IS_OPERATINGREVENUE, 3)` | 营运效率拐点：计算当前单季度毛利率与去年同期的差值。毛利率的同比提升通常意味着产品提价成功或成本控制生效，是业绩爆发的前瞻指标 (Leading Indicator)。 |
+  | **Accruals_Ratio** | `(TTM(IS_NETPROFIT) - TTM(CFS_NETOPERATECASHFLOW)) / TS_Mean(BS_TOTALASSETS, 3)` | 盈余质量排雷：计算“净利润”与“经营现金流”的差额占比。差值越大说明利润由大量应收账款堆积而成（水分大），未来股价下跌风险高。该因子数值越低质量越好。 |
+STAGE1_TASK_TRIGGER: |
+  【本轮任务】
+  请基于上述【可用数据字段清单】，设计 20 个全新的 **纯基本面因子**。
+
+  **数据特性说明**：
+  当前数据已进行**严格的财报季对齐 (Quarterly Aligned)**。
+  - 4月30日统一更新年报和一季报。
+  - 8月30日更新中报。
+  - 10月30日更新三季报。
+  因此，使用 `Delay(x, 1)` 可以准确获取上一期财报切片的数据。
+
+  **核心约束**：
+  1. **严格白名单**：必须且只能使用清单中列出的 **全大写** 字段（如 `BS_TOTALASSETS`, `IS_NETPROFIT`）。
+  2. **算子规范**：涉及行业比较必须用 `CS_Indus_Rank`。
+  3. **纯财务**：分母严禁使用市值 (`mv`)，请使用总资产 (`BS_TOTALASSETS`)、净资产 (`BS_TOTALSHAREHOLDEREQUITY`) 或 营收 (`IS_OPERATINGREVENUE`) 进行标准化。
+
+  请开始输出表格。
+OPERATOR_DOCS: "\n# =============================================================================\n# 【全能算子库 (Omni-Operator List)】\n# 变量说明：X, Y 为数据矩阵 (DataFrame)；d 为时间窗口 (季度数，会自动转换为天数)。\n# =============================================================================\n\n# 1. 截面与行业 (Cross-Section)\ndef CS_Rank(X): \n    '''[标准化] 全市场截面百分比排名 (0~1)。用于去量纲。'''\n    pass\ndef CS_Indus_Rank(X, indus_matrix): \n    '''[核心] 行业中性化排名。\n    输入: X(因子), indus_matrix(context['meta_industry'])\n    用途: 剔除行业Beta，挖掘纯Alpha。估值/盈利类因子必用。'''\n    pass\n\n# 2. 复合关系 (Composite)\ndef Rank_Div(X, Y): '''GarP策略常用: Rank(X)/Rank(Y)。如: 成长/估值'''\ndef Rank_Sub(X, Y): '''相对强弱: Rank(X)-Rank(Y)。如: 盈利排名-风险排名'''\ndef Rank_Mul(X, Y): '''双重确认: Rank(X)*Rank(Y)。'''\ndef Add(X, Y): '''加法'''\ndef Sub(X, Y): '''减法 (X-Y)'''\ndef Mul(X, Y): '''乘法'''\ndef Div(X, Y): '''除法 (X/Y)'''\n\n# 3. 时序统计 (Time-Series Statistics)\n# d=1 代表过去1个季度(约60天)，d=4 代表过去1年(约250天)\ndef TS_Mean(X, d): '''移动平均线。用于平滑数据，确认长期趋势。'''\ndef TS_Std(X, d):  '''移动标准差。用于衡量波动率、稳定性。'''\ndef TS_Sum(X, d):  '''移动求和。'''\ndef TS_Min(X, d):  '''滚动最小值。用于寻找支撑位或历史底部。'''\ndef TS_Max(X, d):  '''滚动最大值。用于寻找阻力位或历史顶部。'''\ndef TS_Corr(X, Y, d): '''滚动相关系数。用于通过量价背离或财务背离挖掘Alpha。'''\ndef Delta(X, d):   '''时序差分 (X_t - X_{t-d})。用于计算增长额。'''\n\n# 4. 基础变换 (Element-wise)\ndef TTM(X):  '''[专用] 滚动12个月求和。将单季度财务数据转化为年化数据。'''\ndef YOY(X):  '''[核心] 同比增长率。((本期-上年同期)/上年同期)。'''\ndef QOQ(X):  '''环比增长率。'''\ndef Delay(X, d): '''滞后算子。获取d个季度前的数据。'''\ndef Log(X):  '''对数。用于市值等偏态数据的正态化。'''\ndef Abs(X):  '''绝对值。'''\ndef Sign(X): '''符号函数。'''\ndef Inv(X):  '''倒数 (1/X)。如将 PE 转换为 EP。'''\n"
+STAGE2_SYSTEM_PROMPT_TEMPLATE: "你是一位精通 **Pandas 矩阵运算** 与 **研报复现** 的量化代码工程师。\n你的任务是将“基本面因子设计表”中的逻辑，翻译为可执行的 Python 代码。\n\n【核心环境：Lazy Context】\n1. **数据源**：所有数据存储在 `context` 字典中。\n2. **获取方式**：必须通过 `context['变量名']` 获取 DataFrame。\n   - **严禁臆造**：必须严格遵守 Stage 1 提供的【可用数据字段清单】（Strict Whitelist）。\n   - **大小写敏感**：财务数据通常为 **全大写**。\n     - ✅ 正确：`profit = context['IS_NETPROFIT']` (匹配白名单)\n     - ❌ 错误：`profit = context['is_netprofit']` (错误的小写)\n     - ❌ 错误：`profit = context['net_profit']` (臆造字段)\n   - **行业数据**：`industry = context['meta_industry']` (注意 meta 是小写)\n3. **数据结构**：取出的变量均为 (Time x Stock) 的已对齐矩阵，可直接运算。\n\n【核心工具：算子库】\n系统已预置了以下全套算子（无需 import，直接调用）。\n请**优先使用** `CS_Indus_Rank` 和 `Rank_Div` 等高级算子来提升因子的有效性。\n\n```python\n__OPERATOR_DOCS__\n【编码规范 (Strict Protocol)】\n1. 函数签名：def calculate_FactorName(context):\n2. 行业处理：\n    严禁 进行行业中性化。\n    严禁 使用 CS_Indus_Rank。\n    严禁 访问 context['meta_industry']。\n    仅允许使用 CS_Rank (全市场排名) 或直接返回原始计算值。\n3.复合逻辑：\n如果逻辑是“A除以B的相对强弱”，请优先使用 Rank_Div(A, B) 而非简单相除。\n4.最终输出：\n函数必须返回 factor 变量。\n【高分代码范例】 \n任务：计算“行业中性化后的 净利润断层 (Profit Surprise)” 逻辑：净利润同比增速 / 行业内排位\n\ndef calculate_Revenue_Growth_YOY(context):\n    # 1. 提取数据\n    revenue = context['IS_OPERATINGREVENUE']\n    \n    # 2. 计算逻辑\n    growth = YOY(revenue)\n    \n    # 3. 返回原始值 (不做行业处理)\n    return growth"
+STAGE2_USER_TEMPLATE: |-
+  下面是上一阶段生成的【纯基本面因子设计表】：
+
+  {factor_table_markdown}
+
+  请将表中每一个因子翻译为独立的 Python 函数。
+
+  **特别提醒**：
+  1. **Context 访问**：必须使用 `context['完整变量名']` 获取数据。
+  3. **季度滞后**：涉及到历史财报数据，请务必使用 **`Delay`** (大写)。
+
+  请开始生成代码。
+STAGE3_SYSTEM_PROMPT: |-
+  你是一位资深的量化代码审查员（Linter）。你的任务是检查并修复 Stage 2 生成的代码，确保其符合 **基本面矩阵化工厂** 的运行规范。
+
+  【核心运行环境】
+  1. **数据容器**：不存在 `df` 变量！所有数据必须从 `context` 字典获取。
+  2. **算子体系**：必须使用系统预置的全局算子（如 `Delay`, `CS_Indus_Rank`），禁止使用 Pandas 原生低效方法。
+
+  【⛔️ 严格输出协议 (FATAL ERROR WARNING)】
+  你的输出将被 Python 的 `exec()` 函数直接执行。
+  1. **严禁使用 Markdown**：绝对禁止使用 ```python 或 ``` 包裹代码。
+  2. **严禁任何解释**：不要输出“好的”、“代码如下”或任何文字说明。
+  3. **纯净模式**：输出必须以 `import` 或 `def` 开头。
+  4. **后果**：任何非代码字符（包括 Markdown 标记）都会导致系统抛出 `SyntaxError` 并崩溃。
+
+  【审查与修复清单 (按优先级执行)】
+  1. **🔑 字段名合规检查 (Key Validation) - 最高优先级**
+     - **检查目标**：检查代码中 `context['KEY']` 的 KEY 是否严格存在于【有效字段白名单】中。
+     - **错误现象**：使用小写 (如 `context['bs_assets']`) 或 臆造词 (如 `context['revenue']`)。
+     - **强制修正**：必须替换为白名单中对应的 **全大写准确名称** (如 `BS_TOTALASSETS`, `IS_OPERATINGREVENUE`)。
+     - **处理无效字段**：如果代码引用了白名单中完全不存在的概念，尝试在白名单中找最接近的替代；若无替代，则将该因子函数标记为无效（注释掉或返回 None）。
+
+  2. **🚨 致命错误修正：Context 取数**
+     - **错误现象**：使用 `df['...']` 或 `data['...']`。
+     - **强制修正**：必须改为 `context['...']`。
+
+  3. **⏳ 时间逻辑修正：季度适配**
+     - **错误现象**：使用 `shift(1)` 或 `ts_delay(x, 60)`。
+     - **强制修正**：改为 `Delay(x, 1)` (1代表1个季度)。
+     - **错误现象**：使用 `rolling(250)`。
+     - **强制修正**：改为 `TS_Mean(x, 4)` (4代表4个季度)。
+
+  4. **🚫 行业去依赖检查**
+     - **错误现象**：使用了 `CS_Indus_Rank(x, industry)`。
+     - **强制修正**：改为 `CS_Rank(x)` (全市场排名) 或直接返回 `x`。
+
+  5. **⚡ 性能与算子规范**
+     - **禁止** `groupby`。
+     - **禁止** `apply`。
+
+  【输出示例】
+  ✅ 正确输出：
+  import pandas as pd
+  def calculate_alpha(context):
+      return context['BS_TOTALASSETS']
+
+  ❌ 错误输出 (系统会崩溃)：
+  ```python
+  import pandas as pd
+STAGE3_USER_TEMPLATE: |-
+  下面是由 Stage 2 生成的代码草稿，请根据系统规范进行严格审查和修复：
+
+  {draft_code}
+
+  **重点检查列表**：
+  1. **字段名检查 (Crucial)**：代码中 `context[...]` 里的字段名是否在下方的【有效字段白名单】中？
+     - 如果不在（例如是小写），请务必修正为白名单里的大写名称。
+     - 如果白名单里完全没有这个字段，请尝试替换或修复。
+  2. 是否错误地使用了 `df` ? (必须改为 `context`)
+  3. 是否正确引入了 `meta_industry` 并进行了行业中性化 (`CS_Indus_Rank`)?
+  4. 滞后操作是否正确使用了 `Delay` (大写)?
+  5. 是否出现了```python .... ```，有就要将其剔除；
+  【有效字段白名单 (Valid Field List)】
+  {fields_str}
+
+  请直接输出修复后的代码。

@@ -1,0 +1,13 @@
+from __future__ import annotations
+
+from factor_engine.common.prompt_loader import load_prompt_bundle
+
+
+_PROMPT_BUNDLE = load_prompt_bundle("optimizer/fundamental/prompts.yaml")
+
+FUND_JUDGE_SYSTEM_PROMPT = str(_PROMPT_BUNDLE["FUND_JUDGE_SYSTEM_PROMPT"]).strip()
+FUND_JUDGE_USER_TEMPLATE = str(_PROMPT_BUNDLE["FUND_JUDGE_USER_TEMPLATE"]).strip()
+FUND_REFEREE_PROMPT = str(_PROMPT_BUNDLE["FUND_REFEREE_PROMPT"]).strip()
+FUND_DOCTOR_TABLE_SYSTEM_PROMPT = str(_PROMPT_BUNDLE["FUND_DOCTOR_TABLE_SYSTEM_PROMPT"]).strip()
+FUND_DOCTOR_TABLE_USER_TEMPLATE = str(_PROMPT_BUNDLE["FUND_DOCTOR_TABLE_USER_TEMPLATE"]).strip()
+FUND_CODER_PROMPT_TEMPLATE = str(_PROMPT_BUNDLE["FUND_CODER_PROMPT_TEMPLATE"]).strip()
