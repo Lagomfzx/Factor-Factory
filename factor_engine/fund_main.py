@@ -23,7 +23,6 @@ from factor_engine.factories.fundamental.prompt_fund import (
     CICC_STRATEGIES,
     STAGE1_SYSTEM_PROMPT_TEMPLATE,
 )
-from factor_engine.optimizer.data_bridge import extract_and_sync_genius_factors
 from factor_engine.optimizer.fundamental.data_bridge_fund import (
     build_judge_context_fund,
     get_optimization_queue_fund,
@@ -32,6 +31,7 @@ from factor_engine.optimizer.fundamental.evolution_loop_fund import (
     run_evolutionary_loop_fund,
 )
 from factor_engine.optimizer.fundamental.llm_agents_fund import run_judge_workflow_fund
+from factor_engine.optimizer.price_volume.data_bridge import extract_and_sync_genius_factors
 
 
 load_dotenv_files()
