@@ -127,6 +127,16 @@ def build_fund_config():
         )
         or DEFAULT_OUTPUT_BASE_DIR
     )
+    cache_dir_env = (
+        get_env(
+            "FACTOR_FACTORY_FUND_CACHE_DIR",
+            default=str(PROJECT_ROOT / "runtime_cache" / "fund"),
+        )
+        or str(PROJECT_ROOT / "runtime_cache" / "fund")
+    )
+    cache_dir = Path(cache_dir_env)
+    if not cache_dir.is_absolute():
+        cache_dir = PROJECT_ROOT / cache_dir
 
     if run_mode not in {"test", "prod"}:
         raise ValueError(f"FACTOR_FACTORY_FUND_RUN_MODE must be 'test' or 'prod', got: {run_mode}")
@@ -140,8 +150,10 @@ def build_fund_config():
         factory_name="fund",
         version=fund_version,
         base_dir=str(base_dir),
+        cache_dir=str(cache_dir),
     )
     print(f"[Fund Factory] RUN_MODE={run_mode} | output_base={base_dir}")
+    print(f"[Fund Factory] Cache DB: {config.db_path}")
     print(f"[Fund Factory] Registry CSV: {config.registry_csv}")
     print(f"[Fund Factory] Premium CSV: {config.premium_registry_csv}")
     return config
@@ -164,9 +176,22 @@ def main() -> None:
     snapshot_days = generate_snapshot_calendar(2016, 2025)
     all_fields = load_useful_fields(str(fields_path))
 
-    filtered_fields = [field for field in all_fields if "DEBT" in field]
-    print(filtered_fields)
-    useful_fields = filtered_fields
+    exclude_fields = {
+        # "BS_TOTALDEBT",
+        # "BS_STBORROW",
+    }
+    exclude_keywords = [
+        # "DEBT",
+        # "LIABILITY",
+    ]
+    useful_fields = [
+        field
+        for field in all_fields
+        if field not in exclude_fields
+        and not any(keyword in field for keyword in exclude_keywords)
+    ]
+    print(f"[Fund Factory] Excluded by exact name: {sorted(exclude_fields)}")
+    print(f"[Fund Factory] Excluded by keyword: {exclude_keywords}")
 
     print(f"[Fund Factory] Loaded {len(useful_fields)} allowed fields from: {fields_path}")
     style_keys = list(CICC_STRATEGIES.keys())
@@ -233,6 +258,7 @@ def main() -> None:
                 client1=client_judge_doctor,
                 client2=client_coder,
                 data_folders=str(data_path),
+                useful_fields=useful_fields,
                 snapshot_days=snapshot_days,
                 max_rounds=evolution_rounds,
                 enable_local_factor_save=enable_local_factor_save,

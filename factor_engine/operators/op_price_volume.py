@@ -10,125 +10,6 @@ operator_lib_header = r'''
 import pandas as pd
 import numpy as np
 
-# ================= 0. 核心装饰器: 双向数据适配器 (Two-way Adapter) =================
-# def auto_process(func):
-#     def wrapper(data, *args, **kwargs):
-#         try:
-#             # [模式 A] 本地调用: 输入已经是矩阵字典 -> 直接计算，直接返回矩阵
-#             if isinstance(data, dict):
-#                 return func(data, *args, **kwargs)
-            
-#             # [模式 B] 远程调用: 输入是长表 DataFrame -> "拆解计算，组装返回"
-#             if isinstance(data, pd.DataFrame):
-#                 # --- 1. Input Adapter: 长表 -> 矩阵字典 ---
-#                 df_long = data.copy()
-#                 # 记录原始索引，用于最后还原对齐
-#                 original_index = df_long.index
-                
-#                 # 确保有 date/code 列用于 Pivot
-#                 if isinstance(df_long.index, pd.MultiIndex):
-#                     df_long = df_long.reset_index()
-                
-#                 # 字段映射 (兼容大小写)
-#                 col_map = {c: c.lower() for c in df_long.columns}
-#                 actual_cols = {v: k for k, v in col_map.items()}
-                
-#                 # 识别 date 和 code 列名
-#                 date_col = next((c for c in df_long.columns if 'date' in c.lower()), 'date')
-#                 code_col = next((c for c in df_long.columns if 'code' in c.lower() or 'asset' in c.lower()), 'code')
-                
-#                 # 准备矩阵字典
-#                 matrix_dict = {}
-#                 target_fields = [
-#                     'open', 'high', 'low', 'close', 'vol', 'volume', 'amount', 
-#                     'turnover_rate', 'pe', 'pb', 'total_mv', 'circ_mv', 
-#                     'return', 'returns', 'ret', 'vwap'
-#                 ]
-                
-#                 if date_col in df_long.columns and code_col in df_long.columns:
-#                     # 统一转 datetime 方便排序
-#                     df_long[date_col] = pd.to_datetime(df_long[date_col])
-                    
-#                     for field in target_fields:
-#                         if field in actual_cols:
-#                             real_col = actual_cols[field]
-#                             # Pivot: Index=Date, Columns=Code
-#                             matrix = df_long.pivot(index=date_col, columns=code_col, values=real_col)
-#                             matrix = matrix.sort_index()
-                            
-#                             # 存入字典
-#                             key = field
-#                             if field == 'volume': key = 'vol'
-#                             if field in ['return', 'returns']: key = 'ret'
-#                             matrix_dict[key] = matrix
-                
-#                 # 补充别名
-#                 if 'vol' not in matrix_dict and 'volume' in matrix_dict:
-#                     matrix_dict['vol'] = matrix_dict['volume']
-
-#                 # --- 2. Core Execution: 执行矩阵运算 ---
-#                 if not matrix_dict:
-#                     # 没提取到数据，尝试直接传原数据(死马当活马医)
-#                     return func(data, *args, **kwargs)
-                
-#                 result_matrix = func(matrix_dict, *args, **kwargs)
-                
-#                 # --- 3. Output Adapter: 矩阵 -> 长表 Series (核心修复点) ---
-#                 # 平台期望得到一个与输入 data 索引一一对应的 Series
-                
-#                 if isinstance(result_matrix, pd.DataFrame):
-#                     # 3.1 宽变长 (Stack): 变成 (Date, Code) 的 Series
-#                     # stack() 自动忽略 NaN，这很好
-#                     series_long = result_matrix.stack()
-                    
-#                     # 3.2 构造目标索引 (Target Index)
-#                     # 我们需要把 series_long 对齐回 input data 的每一行
-                    
-#                     # 获取输入数据的 (Date, Code) 对
-#                     # 注意：matrix_dict 里的 index 是 date_col, columns 是 code_col
-#                     # stack 后的 index names 可能是 (date_col, code_col)
-                    
-#                     # 方案：利用 merge/reindex 还原
-#                     # 为了稳健，我们构造一个临时 DataFrame 来 Join
-#                     target_df = df_long[[date_col, code_col]].copy()
-                    
-#                     # 给 stack 出来的 series 命名以便 merge
-#                     series_name = '_factor_temp_'
-#                     series_long.name = series_name
-                    
-#                     # 变成 DataFrame: Index=(Date, Code), Value=Factor
-#                     # 这一步非常关键：由于 pivot 时 sort_index 了，stack 回来顺序可能变了
-#                     # 所以必须用 index join，不能直接赋值
-#                     factor_long_df = series_long.reset_index()
-#                     # 这里的列名通常是 [date_col, code_col, series_name]
-#                     # 我们需要确保列名和 target_df 一致以便 merge
-#                     # 假设 pivot 时 index 名就是 date_col，columns 名就是 code_col
-                    
-#                     # 强行重命名 factor_long_df 的前两列以匹配 target_df
-#                     factor_long_df.columns = [date_col, code_col, series_name]
-                    
-#                     # 3.3 Merge 回原始顺序
-#                     # 使用 left join 保证行数和顺序与原始 data 严格一致
-#                     # 这一步解决了 "cannot join" 和 "dimension mismatch"
-#                     merged = pd.merge(target_df, factor_long_df, on=[date_col, code_col], how='left')
-                    
-#                     # 3.4 提取 Series 并恢复原始索引 (如果是 MultiIndex)
-#                     result_series = merged[series_name]
-#                     result_series.index = original_index # 完美还原索引
-                    
-#                     return result_series
-                
-#                 # 如果返回的不是 DF (比如是常数)，直接返回
-#                 return result_matrix
-
-#             # 其他情况直接透传
-#             return func(data, *args, **kwargs)
-
-#         except Exception as e:
-#             print(f"❌ [AutoProcess Error] {str(e)}")
-#             raise e
-            
-#     return wrapper
 
 # ================= 0. 核心装饰器: 双向数据适配器 (动态提取版) =================
 def auto_process(func):
@@ -257,7 +138,20 @@ def max_elem(a, b): return np.maximum(a, b)
 def min_elem(a, b): return np.minimum(a, b)
 
 def if_else(condition, true_val, false_val):
-    return true_val.where(condition.astype(bool), false_val)
+    condition = _ensure_df(condition).astype(bool)
+
+    def _broadcast_branch(value):
+        if np.isscalar(value):
+            return pd.DataFrame(value, index=condition.index, columns=condition.columns)
+
+        value = _ensure_df(value).copy()
+        if value.shape[1] == condition.shape[1]:
+            value.columns = condition.columns
+        return value.reindex(index=condition.index, columns=condition.columns)
+
+    true_val = _broadcast_branch(true_val)
+    false_val = _broadcast_branch(false_val)
+    return true_val.where(condition, false_val)
 
 # ================= 3. WQ 截面算子 (Cross-Sectional -> axis=1) =================
 # 所有截面算子都加上了 _ensure_df 防御
@@ -370,6 +264,7 @@ ts_corr = correlation
 TS_Cov = covariance
 Delay = delay
 Delta = delta
+ts_delta = delta
 Decay_Linear = decay_linear
 
 # 辅助
@@ -456,7 +351,20 @@ def matrix_operators():
     def min_elem(a, b): return np.minimum(a, b)
     
     def if_else(condition, true_val, false_val):
-        return true_val.where(condition.astype(bool), false_val)
+        condition = _ensure_df(condition).astype(bool)
+
+        def _broadcast_branch(value):
+            if np.isscalar(value):
+                return pd.DataFrame(value, index=condition.index, columns=condition.columns)
+
+            value = _ensure_df(value).copy()
+            if value.shape[1] == condition.shape[1]:
+                value.columns = condition.columns
+            return value.reindex(index=condition.index, columns=condition.columns)
+
+        true_val = _broadcast_branch(true_val)
+        false_val = _broadcast_branch(false_val)
+        return true_val.where(condition, false_val)
 
     # ------------------------------------------------
     # 2. WQ 截面算子 (需加装防弹衣)
@@ -579,6 +487,7 @@ def matrix_operators():
     ops['ts_corr'] = correlation
     ops['Delay'] = delay
     ops['Delta'] = delta
+    ops['ts_delta'] = delta
     
     ops['Or'] = lambda a, b: a | b
     ops['And'] = lambda a, b: a & b
@@ -626,7 +535,20 @@ def max_elem(a, b): return np.maximum(a, b)
 def min_elem(a, b): return np.minimum(a, b)
 
 def if_else(condition, true_val, false_val):
-    return true_val.where(condition.astype(bool), false_val)
+    condition = _ensure_df(condition).astype(bool)
+
+    def _broadcast_branch(value):
+        if np.isscalar(value):
+            return pd.DataFrame(value, index=condition.index, columns=condition.columns)
+
+        value = _ensure_df(value).copy()
+        if value.shape[1] == condition.shape[1]:
+            value.columns = condition.columns
+        return value.reindex(index=condition.index, columns=condition.columns)
+
+    true_val = _broadcast_branch(true_val)
+    false_val = _broadcast_branch(false_val)
+    return true_val.where(condition, false_val)
 
 # ================= 3. WQ 截面算子 (Cross-Sectional -> axis=1) =================
 # 所有截面算子都加上了 _ensure_df 防御

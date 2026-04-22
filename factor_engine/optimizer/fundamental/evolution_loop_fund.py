@@ -30,6 +30,7 @@ def run_evolutionary_loop_fund(
     client1,
     client2,
     data_folders,
+    useful_fields=None,
     snapshot_days=None,
     max_rounds=3,
     enable_local_factor_save=True,
@@ -53,7 +54,11 @@ def run_evolutionary_loop_fund(
             break
 
         prescriptions = run_doctor_step_fund(current_queue, client1, round_idx)
-        new_factors = run_coder_step_fund(prescriptions, client2)
+        new_factors = run_coder_step_fund(
+            prescriptions,
+            client2,
+            useful_fields=useful_fields,
+        )
         if not new_factors:
             print(f"[Warn] No valid evolved factors generated in {round_label}.")
             continue
@@ -63,6 +68,7 @@ def run_evolutionary_loop_fund(
         batch_job_id, batch_results = submit_batch_factors(
             new_factors,
             OPERATOR_HEADER_STR,
+            config.remote_result_dir,
             extra_payload={"use_fundamental": 1},
         )
 

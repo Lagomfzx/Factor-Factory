@@ -2,11 +2,11 @@ import json
 import re
 
 from factor_engine.optimizer.fundamental.prompts_opt_fund import (
-    FUND_CODER_PROMPT_TEMPLATE,
     FUND_DOCTOR_TABLE_SYSTEM_PROMPT,
     FUND_DOCTOR_TABLE_USER_TEMPLATE,
     FUND_JUDGE_SYSTEM_PROMPT,
     FUND_JUDGE_USER_TEMPLATE,
+    build_fund_coder_prompt,
 )
 
 
@@ -100,22 +100,28 @@ def run_doctor_step_fund(optimization_tasks, client_doctor, round_num):
         return []
 
 
-def run_coder_step_fund(prescriptions, client_coder):
+def _extract_context_fields(code_text):
+    return set(re.findall(r"context\[['\"]([^'\"]+)['\"]\]", code_text or ""))
+
+
+def run_coder_step_fund(prescriptions, client_coder, useful_fields=None):
     if not prescriptions:
         return []
 
     print(f"[FUND-LLM6] Writing code for {len(prescriptions)} factors...")
     results = []
+    useful_fields_set = {str(field).strip() for field in (useful_fields or []) if str(field).strip()}
     for item in prescriptions:
         raw_name = item["Factor_Name"]
         safe_name = re.sub(r"[^a-zA-Z0-9_]", "_", raw_name)
         item["Factor_Name"] = safe_name
 
         try:
-            prompt = FUND_CODER_PROMPT_TEMPLATE.format(
+            prompt = build_fund_coder_prompt(
                 name=safe_name,
                 formula=item["Formula"],
                 logic=item["Logic"],
+                useful_fields=sorted(useful_fields_set),
             )
             resp = client_coder.invoke(prompt)
             content = getattr(resp, "content", str(resp))
@@ -123,6 +129,30 @@ def run_coder_step_fund(prescriptions, client_coder):
                 clean_code = content.split("```python")[1].split("```")[0].strip()
             else:
                 clean_code = content.replace("```", "").strip()
+
+            invalid_fields = sorted(_extract_context_fields(clean_code) - useful_fields_set) if useful_fields_set else []
+            if invalid_fields:
+                repair_prompt = (
+                    prompt
+                    + "\n\n"
+                    + f"你刚才错误引用了这些不在白名单中的字段: {', '.join(invalid_fields)}。\n"
+                    + "请立即重写整段代码，只允许使用白名单中的字段，并只输出完整 Python 代码。"
+                )
+                resp = client_coder.invoke(repair_prompt)
+                content = getattr(resp, "content", str(resp))
+                if "```python" in content:
+                    clean_code = content.split("```python")[1].split("```")[0].strip()
+                else:
+                    clean_code = content.replace("```", "").strip()
+                invalid_fields = sorted(_extract_context_fields(clean_code) - useful_fields_set)
+
+            if invalid_fields:
+                print(
+                    f"[FUND-LLM6] Skip {safe_name}: generated unavailable fields "
+                    f"{', '.join(invalid_fields)}"
+                )
+                continue
+
             item["Code"] = clean_code
             results.append(item)
         except Exception as exc:

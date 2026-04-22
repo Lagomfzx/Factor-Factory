@@ -18,7 +18,11 @@ load_dotenv_files()
 
 # 🚨 仔细看这里：第一个参数已经改成了 matrix_dict
 def run_pipeline_matrix_v2(
+<<<<<<< ours
     config,matrix_dict, input_data, client1, client2, operator_lib_header):
+=======
+    config,matrix_dict, input_data, client1, client2, operator_lib_header, stage1_system_prompt=None):
+>>>>>>> theirs
     """
     量价生成流水线 (重构解耦版)
     直接接收内存中的 matrix_dict，无需再传 folder_path
@@ -26,7 +30,18 @@ def run_pipeline_matrix_v2(
     # 1. 模型生成
     history_text = load_factor_history(config,max_rounds=30)
     print("2️⃣ [模型生成] 正在调用 LLM...")
+<<<<<<< ours
     factor_code_text, factor_table_text = run_three_stages_with_memory(config,client1, client2, history_text, extra_instruction=input_data)
+=======
+    factor_code_text, factor_table_text = run_three_stages_with_memory(
+        config,
+        client1,
+        client2,
+        history_text,
+        extra_instruction=input_data,
+        stage1_system_prompt=stage1_system_prompt,
+    )
+>>>>>>> theirs
 
     # 🚨🚨🚨 核心熔断机制：如果拿到的是空字符串，说明触发了全量拦截，直接提前结束本批次！
     if not factor_code_text or not factor_table_text:

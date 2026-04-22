@@ -72,12 +72,12 @@ import os
 from factor_engine.common.deduplicator import filter_unique_factors_in_memory 
 
 def run_three_stages_with_memory(
-    config, client1, client2, history_text, extra_instruction=""):
+    config, client1, client2, history_text, extra_instruction="", stage1_system_prompt=None):
     # ==========================================
     # Stage 1: Design (因子逻辑构思)
     # ==========================================
     messages_stage1 = [
-        {"role": "system", "content": STAGE1_SYSTEM_PROMPT},
+        {"role": "system", "content": stage1_system_prompt or build_stage1_system_prompt()},
         {"role": "user", "content": build_stage1_user_content(history_text, extra_instruction)}
     ]
     

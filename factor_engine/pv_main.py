@@ -16,7 +16,7 @@ from factor_engine.common.runtime_env import (
 from factor_engine.common.storage import tag_kept_factors
 from factor_engine.factories.price_volume.local_calc_pv import load_data_as_matrices
 from factor_engine.factories.price_volume.pipeline_pv import run_pipeline_matrix_v2
-from factor_engine.factories.price_volume.prompts_pv import CICC_STRATEGIES
+from factor_engine.factories.price_volume.prompts_pv import CICC_STRATEGIES, build_stage1_system_prompt
 from factor_engine.operators.op_price_volume import operator_lib_header
 from factor_engine.optimizer.price_volume.data_bridge import (
     build_judge_context,
@@ -65,17 +65,38 @@ def main() -> None:
     folder_path = Path(get_env("FACTOR_FACTORY_PV_DATA_PATH", default=str(DEFAULT_PV_DATA_PATH)) or DEFAULT_PV_DATA_PATH)
     macro_rounds = get_int_env("FACTOR_FACTORY_PV_MACRO_ROUNDS", default=90)
     pv_version = get_env("FACTOR_FACTORY_PV_VERSION", default="v6") or "v6"
+    pv_output_base_dir = get_env("FACTOR_FACTORY_PV_OUTPUT_BASE_DIR", default="mydata/output") or "mydata/output"
+    pv_cache_dir_env = (
+        get_env("FACTOR_FACTORY_PV_CACHE_DIR", default=str(PROJECT_ROOT / "runtime_cache"))
+        or str(PROJECT_ROOT / "runtime_cache")
+    )
+    pv_cache_dir = Path(pv_cache_dir_env)
+    if not pv_cache_dir.is_absolute():
+        pv_cache_dir = PROJECT_ROOT / pv_cache_dir
     input_data = get_env("FACTOR_FACTORY_PV_INPUT_DATA", default="请开始你的挖掘") or "请开始你的挖掘"
 
     client_judge_doctor, client_coder = build_clients()
 
     matrix_dict = load_data_as_matrices(str(folder_path))
     style_keys = list(CICC_STRATEGIES.keys())
-    pv_config = FactoryConfig(factory_name="pv", version=pv_version)
+    pv_config = FactoryConfig(
+        factory_name="pv",
+        version=pv_version,
+        base_dir=pv_output_base_dir,
+        cache_dir=str(pv_cache_dir),
+    )
 
     for round_idx in range(macro_rounds):
         current_style_name = style_keys[round_idx % len(style_keys)]
         style_info = CICC_STRATEGIES[current_style_name]
+        current_stage1_system_prompt = build_stage1_system_prompt(current_style_name, style_info)
+        current_input_data = (
+            f"{input_data}\n"
+            f"【本轮风格聚焦】{current_style_name}\n"
+            f"核心命题：{style_info.get('desc', '')}\n"
+            f"研究提示：{style_info.get('logic', '')}\n"
+            f"公式提示：\n{style_info.get('formula_guidance', '')}"
+        )
 
         print(f"\n{'=' * 60}")
         print(f"🏭 因子工厂 宏观生产线 - 第 {round_idx + 1}/{macro_rounds} 批次启动")
@@ -85,10 +106,11 @@ def main() -> None:
         gen_job_id, llm1_text, llm3_text, gen_res_json = run_pipeline_matrix_v2(
             config=pv_config,
             matrix_dict=matrix_dict,
-            input_data=input_data,
+            input_data=current_input_data,
             client1=client_judge_doctor,
             client2=client_coder,
             operator_lib_header=operator_lib_header,
+            stage1_system_prompt=current_stage1_system_prompt,
         )
 
         if not gen_res_json or not gen_res_json.get("results"):

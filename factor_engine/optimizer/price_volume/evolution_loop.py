@@ -3,7 +3,11 @@ import os
 
 import pandas as pd
 
-from factor_engine.common.platform_api import submit_batch_factors
+from factor_engine.common.platform_api import (
+    PRICE_VOLUME_LONG_DAILY_TARGET,
+    PRICE_VOLUME_SHORT_DAILY_TARGET_ABS,
+    submit_batch_factors,
+)
 from factor_engine.common.storage import (
     OptimizationStorage,
     sync_to_streamlit_registry,
@@ -16,6 +20,19 @@ from factor_engine.factories.price_volume.local_calc_pv import (
 from factor_engine.operators.op_price_volume import matrix_operators, operator_lib_header
 from factor_engine.optimizer.price_volume.llm_agents import run_coder_step, run_doctor_step
 from factor_engine.optimizer.price_volume.prompts_opt import REFEREE_PROMPT
+
+
+def _target_progress_score(metrics):
+    top_group_daily = max(float(metrics.get("TopGroupDailyRet") or 0), 0.0)
+    bottom_group_daily_abs = max(-float(metrics.get("BottomGroupDailyRet") or 0), 0.0)
+
+    long_score = top_group_daily / PRICE_VOLUME_LONG_DAILY_TARGET if PRICE_VOLUME_LONG_DAILY_TARGET else 0.0
+    short_score = (
+        bottom_group_daily_abs / PRICE_VOLUME_SHORT_DAILY_TARGET_ABS
+        if PRICE_VOLUME_SHORT_DAILY_TARGET_ABS
+        else 0.0
+    )
+    return max(long_score, short_score), top_group_daily, bottom_group_daily_abs
 
 
 def run_evolutionary_loop(config, initial_tasks, client1, client2, matrix_dict, max_rounds=3):
@@ -38,7 +55,11 @@ def run_evolutionary_loop(config, initial_tasks, client1, client2, matrix_dict, 
             continue
 
         storage.save_full_records(round_label, new_factors)
-        batch_job_id, batch_results = submit_batch_factors(new_factors, operator_lib_header)
+        batch_job_id, batch_results = submit_batch_factors(
+            new_factors,
+            operator_lib_header,
+            config.remote_result_dir,
+        )
 
         if batch_job_id:
             sync_to_streamlit_registry(batch_job_id, new_factors, config)
@@ -77,19 +98,32 @@ def run_evolutionary_loop(config, initial_tasks, client1, client2, matrix_dict, 
                 continue
 
             parent_task = next((item for item in current_queue if item["name"] == task["Parent_Name"]), None)
-            parent_ic = parent_task.get("metrics", {}).get("RankIC", 0) if parent_task else 0
-            parent_icir = parent_task.get("metrics", {}).get("ICIR", 0) if parent_task else 0
+            parent_metrics = parent_task.get("metrics", {}) if parent_task else {}
+            parent_ic = parent_metrics.get("RankIC", 0) if parent_task else 0
+            parent_icir = parent_metrics.get("ICIR", 0) if parent_task else 0
             parent_pivot_count = parent_task.get("pivot_count", 0) if parent_task else 0
 
             prompt_compare = REFEREE_PROMPT.format(
                 parent_name=task["Parent_Name"],
                 parent_ic=parent_ic,
                 parent_icir=parent_icir,
+                parent_top_daily=parent_metrics.get("TopGroupDailyRet", 0),
+                parent_bottom_daily=parent_metrics.get("BottomGroupDailyRet", 0),
+                parent_positive_alpha=parent_metrics.get("PositiveAlphaDaily", 0),
+                parent_negative_alpha=parent_metrics.get("NegativeAlphaDailyAbs", 0),
+                parent_extreme_daily=parent_metrics.get("ExtremeGroupDailyExcess", 0),
                 parent_turnover="N/A",
                 child_name=factor_name,
                 child_ic=child_metrics["RankIC"],
                 child_icir=child_metrics["ICIR"],
+                child_top_daily=child_metrics.get("TopGroupDailyRet", 0),
+                child_bottom_daily=child_metrics.get("BottomGroupDailyRet", 0),
+                child_positive_alpha=child_metrics.get("PositiveAlphaDaily", 0),
+                child_negative_alpha=child_metrics.get("NegativeAlphaDailyAbs", 0),
+                child_extreme_daily=child_metrics.get("ExtremeGroupDailyExcess", 0),
                 child_turnover="N/A",
+                long_target=PRICE_VOLUME_LONG_DAILY_TARGET,
+                short_target=PRICE_VOLUME_SHORT_DAILY_TARGET_ABS,
                 doctor_prescription=task["Logic"],
             )
 
@@ -100,15 +134,28 @@ def run_evolutionary_loop(config, initial_tasks, client1, client2, matrix_dict, 
                 ref_res = json.loads(clean_json)
             except Exception as exc:
                 print(f"[LLM4] Referee failed, using fallback: {exc}")
+                parent_score, _, _ = _target_progress_score(parent_metrics)
+                child_score, child_top_daily, child_bottom_daily_abs = _target_progress_score(child_metrics)
                 ref_res = {
-                    "decision": "WIN"
-                    if abs(float(child_metrics.get("RankIC", 0))) > abs(float(parent_ic))
-                    else "LOSE",
-                    "action": "EVOLVE"
-                    if abs(float(child_metrics.get("RankIC", 0))) > 0.01
-                    else "TERMINATE",
-                    "reason": "Fallback numeric referee decision.",
-                    "diagnosis": "Continue strengthening the current signal direction.",
+                    "decision": (
+                        "WIN"
+                        if child_score > parent_score + 0.1
+                        else "STAGNANT"
+                        if abs(child_score - parent_score) <= 0.05
+                        else "LOSE"
+                    ),
+                    "action": (
+                        "KEEP"
+                        if (
+                            child_top_daily >= PRICE_VOLUME_LONG_DAILY_TARGET
+                            or child_bottom_daily_abs >= PRICE_VOLUME_SHORT_DAILY_TARGET_ABS
+                        )
+                        else "EVOLVE"
+                        if child_score >= max(parent_score, 0.4)
+                        else "PIVOT"
+                    ),
+                    "reason": "Fallback decision based on extreme-group target progress.",
+                    "diagnosis": "Strengthen the tail that is closer to target and widen extreme-group spread.",
                 }
 
             this_round_decisions.append(
@@ -124,9 +171,14 @@ def run_evolutionary_loop(config, initial_tasks, client1, client2, matrix_dict, 
             action = ref_res.get("action")
             ic_val = abs(float(child_metrics.get("RankIC", 0)))
             icir_val = abs(float(child_metrics.get("ICIR", 0)))
+            _, child_top_daily, child_bottom_daily_abs = _target_progress_score(child_metrics)
 
             if action == "KEEP":
-                print(f"[Keep] {factor_name} (IC={ic_val:.4f}, ICIR={icir_val:.2f})")
+                print(
+                    f"[Keep] {factor_name} "
+                    f"(Top={child_top_daily:.6f}, BottomAbs={child_bottom_daily_abs:.6f}, "
+                    f"IC={ic_val:.4f}, ICIR={icir_val:.2f})"
+                )
                 hall_of_fame.append({**task, "metrics": child_metrics})
                 this_round_kept_factors.append(task)
             elif action == "EVOLVE":
@@ -143,7 +195,7 @@ def run_evolutionary_loop(config, initial_tasks, client1, client2, matrix_dict, 
                     }
                 )
             elif action == "PIVOT":
-                if ic_val >= 0.005:
+                if child_top_daily >= PRICE_VOLUME_LONG_DAILY_TARGET * 0.25 or child_bottom_daily_abs >= PRICE_VOLUME_SHORT_DAILY_TARGET_ABS * 0.25:
                     if parent_pivot_count >= 1:
                         print(f"[Terminate] {factor_name} exhausted after repeated pivot.")
                     else:
@@ -156,14 +208,17 @@ def run_evolutionary_loop(config, initial_tasks, client1, client2, matrix_dict, 
                                 "metrics": child_metrics,
                                 "diagnosis": ref_res.get(
                                     "diagnosis",
-                                    "Current direction failed, switch to a new mathematical structure.",
+                                    "Current direction failed, switch to a new price-volume structure.",
                                 ),
                                 "action": "PIVOT",
                                 "pivot_count": parent_pivot_count + 1,
                             }
                         )
                 else:
-                    print(f"[Terminate] {factor_name} too weak to justify pivot (IC={ic_val:.4f}).")
+                    print(
+                        f"[Terminate] {factor_name} too weak to justify pivot "
+                        f"(Top={child_top_daily:.6f}, BottomAbs={child_bottom_daily_abs:.6f})."
+                    )
             else:
                 print(f"[Terminate] {factor_name} dropped: {ref_res.get('reason')}")
 
