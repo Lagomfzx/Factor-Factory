@@ -4,14 +4,21 @@ import os
 class FactoryConfig:
     """Factory-wide path configuration."""
 
-    def __init__(self, factory_name: str, version: str, base_dir: str = "mydata/output"):
+    def __init__(
+        self,
+        factory_name: str,
+        version: str,
+        base_dir: str = "mydata/output",
+        cache_dir: str | None = None,
+    ):
         self.factory_name = factory_name
         self.version = version
         self.base_dir = base_dir
+        self.cache_dir = cache_dir or os.path.join(self.base_dir, "cache")
 
         self.llm_output_dir = os.path.join(self.base_dir, "llm_output", f"llm_output_{self.version}")
         self.combined_output_dir = os.path.join(self.base_dir, "llm_output", f"combined_{self.version}")
-        self.factor_out_dir = os.path.join(self.base_dir, "factor", f"日频因子_{self.version}")
+        self.factor_out_dir = os.path.join(self.base_dir, "factor", f"鏃ラ鍥犲瓙_{self.version}")
         self.remote_result_dir = os.path.join(self.base_dir, "remote_json")
 
         self.registry_csv = os.path.join(self.base_dir, "job_id_output", f"job_id_output_{self.version}.csv")
@@ -24,8 +31,7 @@ class FactoryConfig:
         opt_dir = os.path.join(self.base_dir, "opt_data", f"{self.factory_name}_{self.version}")
         self.history_file = os.path.join(self.llm_output_dir, "factor_gpt_history.txt")
         self.db_path = os.path.join(
-            self.base_dir,
-            "cache",
+            self.cache_dir,
             f"factor_hashes_{self.factory_name}_{self.version}.db",
         )
         self.evolution_history_csv = os.path.join(opt_dir, f"factor_evolution_history_{self.version}.csv")
@@ -36,7 +42,13 @@ class FactoryConfig:
         self._make_dirs()
 
     def _make_dirs(self):
-        for path in [self.llm_output_dir, self.combined_output_dir, self.factor_out_dir, self.remote_result_dir]:
+        for path in [
+            self.llm_output_dir,
+            self.combined_output_dir,
+            self.factor_out_dir,
+            self.remote_result_dir,
+            self.cache_dir,
+        ]:
             os.makedirs(path, exist_ok=True)
 
         for file_path in [

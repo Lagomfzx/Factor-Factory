@@ -14,43 +14,153 @@ load_dotenv_files()
 EXTREME_GROUP_DAILY_TARGET = 0.0004
 EXTREME_GROUP_ANNUAL_TARGET = round(EXTREME_GROUP_DAILY_TARGET * 252, 4)
 
+PRICE_VOLUME_LONG_DAILY_TARGET = 0.0008
+PRICE_VOLUME_SHORT_DAILY_TARGET_ABS = 0.0002
+
+
+def _to_float(value):
+    try:
+        return float(value or 0)
+    except Exception:
+        return 0.0
+
+
+def _matches_hint(key_str, hint):
+    if hint in {"group1", "group10", "decile1", "decile10"}:
+        normalized = key_str.replace("_", "").replace("-", "").replace(" ", "")
+        return normalized.endswith(hint)
+    return hint in key_str
+
+
+def _pick_group_by_hint(group_metrics, hints):
+    for key, value in group_metrics.items():
+        key_str = str(key).lower()
+        if any(_matches_hint(key_str, hint) for hint in hints) and isinstance(value, dict):
+            return value
+    return {}
+
+
+def _extract_group_curve_summary(group_metrics):
+    curve_pairs = []
+    for idx in range(1, 11):
+        bucket = group_metrics.get(f"组{idx}")
+        if isinstance(bucket, dict):
+            curve_pairs.append(
+                (
+                    f"组{idx}",
+                    _to_float(bucket.get("mean_ret")),
+                    _to_float(bucket.get("sharpe_ratio")),
+                )
+            )
+
+    if not curve_pairs:
+        return {
+            "GroupCurveDailyRet": {},
+            "GroupCurveDailyRetText": "N/A",
+            "GroupCurveDailySharpe": {},
+            "TopBottomSpreadDaily": 0.0,
+            "BestGroupName": "UNKNOWN",
+            "WorstGroupName": "UNKNOWN",
+            "BestGroupDailyRet": 0.0,
+            "WorstGroupDailyRet": 0.0,
+            "MonotonicityScore": 0.0,
+            "MonotonicityLabel": "UNKNOWN",
+            "TailDominance": "UNKNOWN",
+        }
+
+    daily_curve = {name: round(mean_ret, 6) for name, mean_ret, _ in curve_pairs}
+    sharpe_curve = {name: round(sharpe, 2) for name, _, sharpe in curve_pairs}
+    curve_text = ", ".join(f"{name}={mean_ret:.6f}" for name, mean_ret, _ in curve_pairs)
+
+    mean_values = [mean_ret for _, mean_ret, _ in curve_pairs]
+    pair_count = max(len(mean_values) - 1, 1)
+    increasing_pairs = sum(1 for left, right in zip(mean_values, mean_values[1:]) if right >= left)
+    decreasing_pairs = sum(1 for left, right in zip(mean_values, mean_values[1:]) if right <= left)
+
+    monotonicity_score = max(increasing_pairs, decreasing_pairs) / pair_count
+    if monotonicity_score >= 0.8:
+        monotonicity_label = "INCREASING" if increasing_pairs >= decreasing_pairs else "DECREASING"
+    elif monotonicity_score >= 0.6:
+        monotonicity_label = "PARTIAL"
+    else:
+        monotonicity_label = "MIXED"
+
+    best_group_name, best_group_ret, _ = max(curve_pairs, key=lambda item: item[1])
+    worst_group_name, worst_group_ret, _ = min(curve_pairs, key=lambda item: item[1])
+    top_bottom_spread_daily = best_group_ret - worst_group_ret
+
+    if abs(best_group_ret) > abs(worst_group_ret):
+        tail_dominance = "LONG"
+    elif abs(best_group_ret) < abs(worst_group_ret):
+        tail_dominance = "SHORT"
+    else:
+        tail_dominance = "BALANCED"
+
+    return {
+        "GroupCurveDailyRet": daily_curve,
+        "GroupCurveDailyRetText": curve_text,
+        "GroupCurveDailySharpe": sharpe_curve,
+        "TopBottomSpreadDaily": round(top_bottom_spread_daily, 6),
+        "BestGroupName": best_group_name,
+        "WorstGroupName": worst_group_name,
+        "BestGroupDailyRet": round(best_group_ret, 6),
+        "WorstGroupDailyRet": round(worst_group_ret, 6),
+        "MonotonicityScore": round(monotonicity_score, 3),
+        "MonotonicityLabel": monotonicity_label,
+        "TailDominance": tail_dominance,
+    }
+
 
 def extract_extreme_group_metrics(raw_result_item):
     group_metrics = raw_result_item.get("group_metics") or raw_result_item.get("group_metrics") or {}
+    curve_summary = _extract_group_curve_summary(group_metrics) if isinstance(group_metrics, dict) else _extract_group_curve_summary({})
+
     if not isinstance(group_metrics, dict) or not group_metrics:
         return {
             "ExtremeGroupDailyExcess": 0.0,
             "ExtremeGroupMaxExcess": 0.0,
             "BestExtremeSide": "UNKNOWN",
+            "TopGroupDailyRet": 0.0,
+            "BottomGroupDailyRet": 0.0,
+            "TopGroupSharpe": 0.0,
+            "BottomGroupSharpe": 0.0,
+            "PositiveAlphaDaily": 0.0,
+            "NegativeAlphaDailyAbs": 0.0,
+            "HitLongTarget": False,
+            "HitShortTarget": False,
+            **curve_summary,
             "RawGroupMetrics": group_metrics,
         }
 
-    def _to_float(value):
-        try:
-            return float(value or 0)
-        except Exception:
-            return 0.0
+    top_group = _pick_group_by_hint(group_metrics, ["极大", "最大", "long", "top", "high", "group10", "decile10"])
+    bottom_group = _pick_group_by_hint(group_metrics, ["极小", "最小", "short", "bottom", "low", "group1", "decile1"])
 
-    def _pick_group_by_hint(hints):
-        for key, value in group_metrics.items():
-            key_str = str(key).lower()
-            if any(hint in key_str for hint in hints) and isinstance(value, dict):
-                return value
-        return {}
+    top_ret = _to_float((top_group or {}).get("mean_ret"))
+    bottom_ret = _to_float((bottom_group or {}).get("mean_ret"))
+    top_sharpe = _to_float((top_group or {}).get("sharpe_ratio"))
+    bottom_sharpe = _to_float((bottom_group or {}).get("sharpe_ratio"))
 
-    long_group = _pick_group_by_hint(["极大", "最大", "long", "top", "high", "group10", "decile10"])
-    short_group = _pick_group_by_hint(["极小", "最小", "short", "bottom", "low", "group1", "decile1"])
+    positive_alpha = max(top_ret, 0.0)
+    negative_alpha_abs = max(-bottom_ret, 0.0)
+    hit_long_target = positive_alpha >= PRICE_VOLUME_LONG_DAILY_TARGET
+    hit_short_target = negative_alpha_abs >= PRICE_VOLUME_SHORT_DAILY_TARGET_ABS
 
-    long_ret = _to_float(long_group.get("mean_ret"))
-    short_ret = _to_float(short_group.get("mean_ret"))
-
-    if long_group or short_group:
-        daily_abs_max = max(abs(long_ret), abs(short_ret))
-        best_side = "LONG" if abs(long_ret) >= abs(short_ret) else "SHORT"
+    if top_group or bottom_group:
+        daily_abs_max = max(abs(top_ret), abs(bottom_ret))
+        best_side = "LONG" if abs(top_ret) >= abs(bottom_ret) else "SHORT"
         return {
             "ExtremeGroupDailyExcess": round(daily_abs_max, 6),
             "ExtremeGroupMaxExcess": round(daily_abs_max * 252, 4),
             "BestExtremeSide": best_side,
+            "TopGroupDailyRet": round(top_ret, 6),
+            "BottomGroupDailyRet": round(bottom_ret, 6),
+            "TopGroupSharpe": round(top_sharpe, 2),
+            "BottomGroupSharpe": round(bottom_sharpe, 2),
+            "PositiveAlphaDaily": round(positive_alpha, 6),
+            "NegativeAlphaDailyAbs": round(negative_alpha_abs, 6),
+            "HitLongTarget": hit_long_target,
+            "HitShortTarget": hit_short_target,
+            **curve_summary,
             "RawGroupMetrics": group_metrics,
         }
 
@@ -63,9 +173,9 @@ def extract_extreme_group_metrics(raw_result_item):
         if abs(mean_ret) > daily_abs_max:
             daily_abs_max = abs(mean_ret)
             key_str = str(key).lower()
-            if any(hint in key_str for hint in ["极大", "最大", "long", "top", "high"]):
+            if any(_matches_hint(key_str, hint) for hint in ["极大", "最大", "long", "top", "high", "group10", "decile10"]):
                 best_side = "LONG"
-            elif any(hint in key_str for hint in ["极小", "最小", "short", "bottom", "low"]):
+            elif any(_matches_hint(key_str, hint) for hint in ["极小", "最小", "short", "bottom", "low", "group1", "decile1"]):
                 best_side = "SHORT"
             else:
                 best_side = str(key)
@@ -74,6 +184,15 @@ def extract_extreme_group_metrics(raw_result_item):
         "ExtremeGroupDailyExcess": round(daily_abs_max, 6),
         "ExtremeGroupMaxExcess": round(daily_abs_max * 252, 4),
         "BestExtremeSide": best_side,
+        "TopGroupDailyRet": 0.0,
+        "BottomGroupDailyRet": 0.0,
+        "TopGroupSharpe": 0.0,
+        "BottomGroupSharpe": 0.0,
+        "PositiveAlphaDaily": 0.0,
+        "NegativeAlphaDailyAbs": 0.0,
+        "HitLongTarget": False,
+        "HitShortTarget": False,
+        **curve_summary,
         "RawGroupMetrics": group_metrics,
     }
 
@@ -87,6 +206,8 @@ def clean_platform_result(raw_result_item):
     raw_turnover = raw_result_item.get("turnover") or raw_result_item.get("long_short_turnover")
 
     extreme_metrics = extract_extreme_group_metrics(raw_result_item)
+    top_ret = extreme_metrics["TopGroupDailyRet"]
+    bottom_ret = extreme_metrics["BottomGroupDailyRet"]
 
     clean_data = {
         "Name": raw_result_item.get("col_name", "Unknown"),
@@ -96,32 +217,36 @@ def clean_platform_result(raw_result_item):
         "ExtremeGroupDailyExcess": extreme_metrics["ExtremeGroupDailyExcess"],
         "ExtremeGroupMaxExcess": extreme_metrics["ExtremeGroupMaxExcess"],
         "BestExtremeSide": extreme_metrics["BestExtremeSide"],
+        "TopGroupDailyRet": top_ret,
+        "BottomGroupDailyRet": bottom_ret,
+        "TopGroupSharpe": extreme_metrics["TopGroupSharpe"],
+        "BottomGroupSharpe": extreme_metrics["BottomGroupSharpe"],
+        "PositiveAlphaDaily": extreme_metrics["PositiveAlphaDaily"],
+        "NegativeAlphaDailyAbs": extreme_metrics["NegativeAlphaDailyAbs"],
+        "HitLongTarget": extreme_metrics["HitLongTarget"],
+        "HitShortTarget": extreme_metrics["HitShortTarget"],
+        "LongDailyTarget": PRICE_VOLUME_LONG_DAILY_TARGET,
+        "ShortDailyTargetAbs": PRICE_VOLUME_SHORT_DAILY_TARGET_ABS,
+        "GroupCurveDailyRet": extreme_metrics["GroupCurveDailyRet"],
+        "GroupCurveDailyRetText": extreme_metrics["GroupCurveDailyRetText"],
+        "GroupCurveDailySharpe": extreme_metrics["GroupCurveDailySharpe"],
+        "TopBottomSpreadDaily": extreme_metrics["TopBottomSpreadDaily"],
+        "BestGroupName": extreme_metrics["BestGroupName"],
+        "WorstGroupName": extreme_metrics["WorstGroupName"],
+        "BestGroupDailyRet": extreme_metrics["BestGroupDailyRet"],
+        "WorstGroupDailyRet": extreme_metrics["WorstGroupDailyRet"],
+        "MonotonicityScore": extreme_metrics["MonotonicityScore"],
+        "MonotonicityLabel": extreme_metrics["MonotonicityLabel"],
+        "TailDominance": extreme_metrics["TailDominance"],
+        "LongTargetGap": round(PRICE_VOLUME_LONG_DAILY_TARGET - max(top_ret, 0.0), 6),
+        "ShortTargetGap": round(PRICE_VOLUME_SHORT_DAILY_TARGET_ABS - max(-bottom_ret, 0.0), 6),
     }
 
-    group_metrics = extreme_metrics["RawGroupMetrics"]
-    if group_metrics:
-        try:
-            long_group = None
-            short_group = None
-            for key, value in group_metrics.items():
-                key_str = str(key).lower()
-                if long_group is None and any(hint in key_str for hint in ["极大", "最大", "long", "top", "high"]):
-                    long_group = value
-                if short_group is None and any(hint in key_str for hint in ["极小", "最小", "short", "bottom", "low"]):
-                    short_group = value
-
-            long_ret = float((long_group or {}).get("mean_ret") or 0)
-            short_ret = float((short_group or {}).get("mean_ret") or 0)
-            long_short_ret = (long_ret - short_ret) * 252
-
-            clean_data["LongShortRet"] = f"{long_short_ret:.2%}"
-            clean_data["TopSharpe"] = round(float((long_group or {}).get("sharpe_ratio") or 0), 2)
-        except Exception:
-            clean_data["LongShortRet"] = "Error"
-            clean_data["TopSharpe"] = 0
-    else:
-        clean_data["LongShortRet"] = "N/A"
-        clean_data["TopSharpe"] = 0
+    try:
+        long_short_ret = (top_ret - bottom_ret) * 252
+        clean_data["LongShortRet"] = f"{long_short_ret:.2%}"
+    except Exception:
+        clean_data["LongShortRet"] = "Error"
 
     return clean_data
 
@@ -173,6 +298,7 @@ def wait_and_save_remote_result(base_url, job_id, save_path, max_retries=60 * 15
 def submit_batch_factors(
     factor_tasks,
     operator_header,
+    remote_result_dir,
     base_url=None,
     extra_payload=None,
 ):
@@ -197,7 +323,8 @@ def submit_batch_factors(
         res = requests.post(f"{base_url}/jobs", json=payload)
         job_id = res.json().get("job_id")
 
-        save_path = f"mydata/output/remote_json/{job_id}.json"
+        os.makedirs(remote_result_dir, exist_ok=True)
+        save_path = os.path.join(remote_result_dir, f"{job_id}.json")
         wait_and_save_remote_result(base_url, job_id, save_path)
 
         with open(save_path, "r", encoding="utf-8") as f:

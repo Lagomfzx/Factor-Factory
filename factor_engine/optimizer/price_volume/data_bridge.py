@@ -4,6 +4,10 @@ import re
 
 import pandas as pd
 
+from factor_engine.common.platform_api import (
+    PRICE_VOLUME_LONG_DAILY_TARGET,
+    PRICE_VOLUME_SHORT_DAILY_TARGET_ABS,
+)
 from factor_engine.common.storage import sync_to_v6_1_registry
 
 
@@ -62,14 +66,27 @@ def get_optimization_queue(decisions, original_context):
         if not source_data:
             continue
 
+        metrics = source_data.get("metrics", {}) or {}
+        top_group_daily = max(float(metrics.get("TopGroupDailyRet") or 0), 0.0)
+        bottom_group_daily_abs = max(-float(metrics.get("BottomGroupDailyRet") or 0), 0.0)
+
+        if (
+            top_group_daily >= PRICE_VOLUME_LONG_DAILY_TARGET * 0.6
+            or bottom_group_daily_abs >= PRICE_VOLUME_SHORT_DAILY_TARGET_ABS * 0.6
+        ):
+            next_action = "EVOLVE"
+        else:
+            next_action = "PIVOT"
+
         queue.append(
             {
                 "name": factor_name,
                 "original_code": source_data["code"],
                 "original_logic": source_data["logic"],
+                "metrics": metrics,
                 "diagnosis": case.get("diagnosis", ""),
                 "reason": case.get("reason", ""),
-                "action": "PIVOT",
+                "action": next_action,
                 "pivot_count": 0,
             }
         )

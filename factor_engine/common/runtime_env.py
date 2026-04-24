@@ -27,8 +27,23 @@ def _parse_env_line(raw_line: str) -> tuple[str, str] | None:
     return key, value
 
 
+# def load_dotenv_files() -> None:
+#     for env_file in [PROJECT_ROOT / ".env", PROJECT_ROOT / ".env.local"]:
+#         if not env_file.exists() or not env_file.is_file():
+#             continue
+#         for line in env_file.read_text(encoding="utf-8").splitlines():
+#             parsed = _parse_env_line(line)
+#             if parsed is None:
+#                 continue
+#             key, value = parsed
+#             if key not in os.environ:
+#                 os.environ[key] = value
 def load_dotenv_files() -> None:
-    for env_file in [PROJECT_ROOT / ".env", PROJECT_ROOT / ".env.local"]:
+    for env_file in [
+        PROJECT_ROOT / "factor_factory.env",
+        PROJECT_ROOT / ".env",
+        PROJECT_ROOT / ".env.local",
+    ]:
         if not env_file.exists() or not env_file.is_file():
             continue
         for line in env_file.read_text(encoding="utf-8").splitlines():
@@ -38,6 +53,7 @@ def load_dotenv_files() -> None:
             key, value = parsed
             if key not in os.environ:
                 os.environ[key] = value
+
 
 
 def get_env(name: str, *, default: str | None = None, aliases: list[str] | None = None) -> str | None:

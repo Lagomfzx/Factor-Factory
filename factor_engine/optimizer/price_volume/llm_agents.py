@@ -1,6 +1,10 @@
 import json
 import re
 
+from factor_engine.common.platform_api import (
+    PRICE_VOLUME_LONG_DAILY_TARGET,
+    PRICE_VOLUME_SHORT_DAILY_TARGET_ABS,
+)
 from factor_engine.optimizer.price_volume.prompts_opt import (
     CODER_PROMPT_TEMPLATE,
     DOCTOR_TABLE_SYSTEM_PROMPT,
@@ -66,10 +70,23 @@ def run_doctor_step(optimization_tasks, client_doctor, round_num):
     for task in optimization_tasks:
         action = task.get("action", "PIVOT")
         num_variants = 3 if action == "PIVOT" else 1
+        metrics = task.get("metrics", {}) or {}
 
         tasks_desc += f"- 原名: {task['name']}\n"
         tasks_desc += f"  当前状态: {action}\n"
         tasks_desc += f"  要求生成方案数: {num_variants}\n"
+        tasks_desc += (
+            f"  当前量价目标: TopGroupDailyRet >= {PRICE_VOLUME_LONG_DAILY_TARGET:.4f}, "
+            f"BottomGroupDailyRet <= -{PRICE_VOLUME_SHORT_DAILY_TARGET_ABS:.4f}\n"
+        )
+        tasks_desc += (
+            f"  当前绩效: TopGroupDailyRet={float(metrics.get('TopGroupDailyRet') or 0):.6f}, "
+            f"BottomGroupDailyRet={float(metrics.get('BottomGroupDailyRet') or 0):.6f}, "
+            f"PositiveAlphaDaily={float(metrics.get('PositiveAlphaDaily') or 0):.6f}, "
+            f"NegativeAlphaDailyAbs={float(metrics.get('NegativeAlphaDailyAbs') or 0):.6f}, "
+            f"RankIC={float(metrics.get('RankIC') or 0):.4f}, "
+            f"ICIR={float(metrics.get('ICIR') or 0):.2f}\n"
+        )
         tasks_desc += f"  诊断意见: {task.get('diagnosis', '请进行全方位探索优化')}\n"
         tasks_desc += f"  原逻辑: {task.get('original_logic', '无')}\n\n"
 

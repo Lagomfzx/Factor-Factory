@@ -66,18 +66,33 @@ def to_lc_messages(messages_payload):
 
 #     return text_3, text_1
 
+import re
+
+def _strip_code_fences(text: str) -> str:
+    if not text:
+        return text
+
+    text = text.strip()
+
+    match = re.search(r"```(?:python)?\s*(.*?)```", text, flags=re.S)
+    if match:
+        return match.group(1).strip()
+
+    return text.replace("```python", "").replace("```", "").strip()
+
+
 import json
 import os
 # 🚨 导入我们刚才写好的内存级去重拦截器
 from factor_engine.common.deduplicator import filter_unique_factors_in_memory 
 
 def run_three_stages_with_memory(
-    config, client1, client2, history_text, extra_instruction=""):
+    config, client1, client2, history_text, extra_instruction="", stage1_system_prompt=None):
     # ==========================================
     # Stage 1: Design (因子逻辑构思)
     # ==========================================
     messages_stage1 = [
-        {"role": "system", "content": STAGE1_SYSTEM_PROMPT},
+        {"role": "system", "content": stage1_system_prompt or build_stage1_system_prompt()},
         {"role": "user", "content": build_stage1_user_content(history_text, extra_instruction)}
     ]
     
@@ -144,6 +159,8 @@ def run_three_stages_with_memory(
     text_3 = getattr(resp3, "content", str(resp3))
     
     save_output_to_file(text_3, "model_chain_3_output",config)
+    
+    clean_factor_code_text = _strip_code_fences(text_3)
 
     # 🚨 返回最终的代码 (text_3) 和 过滤后的设计原稿 (filtered_text_1)
-    return text_3, filtered_text_1
+    return clean_factor_code_text, filtered_text_1
