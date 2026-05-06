@@ -71,7 +71,12 @@ def run_evolutionary_loop_fund(
             new_factors,
             OPERATOR_HEADER_STR,
             config.remote_result_dir,
-            extra_payload={"use_fundamental": 1},
+            extra_payload={
+                "need_adj": 0,
+                "time_period": 10,
+                "use_fundamental": 1,
+                "local_data_subdir": "/财务数据/指标_v1",
+            }
         )
 
         if batch_job_id:

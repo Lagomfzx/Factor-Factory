@@ -82,7 +82,14 @@ def run_hybrid_pipeline(
             py_code=final_py_code,
             explain_text=design_text,
             url=remote_url,
-            extra_payload={"use_fundamental": 1},
+            # extra_payload={"use_fundamental": 1},
+            extra_payload={
+                "need_adj": 0,
+                "time_period": 10,
+                "use_fundamental": 1,
+                "local_data_subdir": "/财务数据/指标_v1",
+            }
+
         )
 
         if current_job_id:
