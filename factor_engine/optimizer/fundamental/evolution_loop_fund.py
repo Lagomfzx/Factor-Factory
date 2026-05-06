@@ -31,6 +31,7 @@ def run_evolutionary_loop_fund(
     client2,
     data_folders,
     useful_fields=None,
+    field_governance=None,
     snapshot_days=None,
     max_rounds=3,
     enable_local_factor_save=True,
@@ -58,6 +59,7 @@ def run_evolutionary_loop_fund(
             prescriptions,
             client2,
             useful_fields=useful_fields,
+            field_governance=field_governance,
         )
         if not new_factors:
             print(f"[Warn] No valid evolved factors generated in {round_label}.")

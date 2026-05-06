@@ -36,6 +36,7 @@ def run_three_stages_with_memory(
     all_fields,
     extra_instruction="",
     system_prompt=None,
+    field_governance=None,
 ):
     stage1_system_prompt = system_prompt or STAGE1_SYSTEM_PROMPT_TEMPLATE
 
@@ -43,7 +44,12 @@ def run_three_stages_with_memory(
         {"role": "system", "content": stage1_system_prompt},
         {
             "role": "user",
-            "content": build_stage1_user_content(history_text, all_fields, extra_instruction),
+            "content": build_stage1_user_content(
+                history_text,
+                all_fields,
+                extra_instruction,
+                field_governance=field_governance,
+            ),
         },
     ]
 
@@ -67,7 +73,13 @@ def run_three_stages_with_memory(
 
     messages_stage3 = [
         {"role": "system", "content": STAGE3_SYSTEM_PROMPT},
-        {"role": "user", "content": build_stage3_user_content(text_2, all_fields)},
+        {
+            "role": "user",
+            "content": build_stage3_user_content(
+                text_2,
+                all_fields,
+            ),
+        },
     ]
 
     print(">>> Calling Stage 3 (Code Correction)...")

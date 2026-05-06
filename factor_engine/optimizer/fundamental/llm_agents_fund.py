@@ -104,7 +104,12 @@ def _extract_context_fields(code_text):
     return set(re.findall(r"context\[['\"]([^'\"]+)['\"]\]", code_text or ""))
 
 
-def run_coder_step_fund(prescriptions, client_coder, useful_fields=None):
+def run_coder_step_fund(
+    prescriptions,
+    client_coder,
+    useful_fields=None,
+    field_governance=None,
+):
     if not prescriptions:
         return []
 
@@ -122,6 +127,7 @@ def run_coder_step_fund(prescriptions, client_coder, useful_fields=None):
                 formula=item["Formula"],
                 logic=item["Logic"],
                 useful_fields=sorted(useful_fields_set),
+                field_governance=field_governance,
             )
             resp = client_coder.invoke(prompt)
             content = getattr(resp, "content", str(resp))

@@ -496,7 +496,9 @@ def index_and_save_job_details(job_id, llm1_text, llm3_text, config): # 🚨 传
     for chunk in llm3_text.split('def '):
         if not chunk.strip(): continue
         first_line = chunk.split('\n')[0]
-        match = re.search(r'calculate_(\w+)\(df\):', first_line)
+        # match = re.search(r'calculate_(\w+)\(df\):', first_line)
+        match = re.search(r'calculate_(\w+)\s*\([^)]*\)\s*:', first_line)
+
         if match:
             factor_name = match.group(1)
             full_code = "def " + chunk.strip()

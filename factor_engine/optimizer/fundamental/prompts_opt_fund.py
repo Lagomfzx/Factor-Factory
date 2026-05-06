@@ -25,11 +25,43 @@ Financial data shape constraints:
 """.strip()
 
 
+def _format_field_governance_context(field_governance: dict | None) -> str:
+    if not field_governance:
+        return ""
+
+    lines = ["[Field Governance]"]
+    focus_fields = field_governance.get("focus_fields") or []
+    denominator_fields = field_governance.get("denominator_fields") or []
+    cautious_fields = field_governance.get("cautious_fields") or []
+    note_fields = field_governance.get("note_fields") or []
+
+    if focus_fields:
+        lines.append("Prefer using these focus fields first: " + ", ".join(focus_fields[:30]))
+    if denominator_fields:
+        lines.append(
+            "If the factor needs a denominator, prefer these fields: "
+            + ", ".join(denominator_fields[:20])
+        )
+    if cautious_fields:
+        lines.append(
+            "These fields are allowed but should not easily become the sole backbone of the factor: "
+            + ", ".join(cautious_fields[:20])
+        )
+    if note_fields:
+        lines.append(
+            "These note-like fields are better used as confirmation, filter, or adjustment: "
+            + ", ".join(note_fields[:20])
+        )
+
+    return "\n".join(lines) if len(lines) > 1 else ""
+
+
 def build_fund_coder_prompt(
     name: str,
     formula: str,
     logic: str,
     useful_fields: list[str] | None = None,
+    field_governance: dict | None = None,
 ) -> str:
     prompt = FUND_CODER_PROMPT_TEMPLATE.format(
         name=name,
@@ -61,5 +93,9 @@ def build_fund_coder_prompt(
         "[Financial Data Shape]\n"
         f"{FUND_DATA_SHAPE_CONTEXT}"
     )
+
+    governance_context = _format_field_governance_context(field_governance)
+    if governance_context:
+        prompt += "\n\n" + governance_context
 
     return prompt

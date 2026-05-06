@@ -28,6 +28,7 @@ def run_hybrid_pipeline(
     config,
     data_folders,
     useful_fields,
+    field_governance,
     input_instruction,
     client1,
     client2,
@@ -68,6 +69,7 @@ def run_hybrid_pipeline(
             all_fields=all_fields,
             extra_instruction=input_instruction,
             system_prompt=system_prompt,
+            field_governance=field_governance,
         )
 
         if not code_text or not design_text:

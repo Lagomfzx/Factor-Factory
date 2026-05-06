@@ -17,6 +17,11 @@ from factor_engine.common.runtime_env import (
     require_env,
 )
 from factor_engine.common.storage import tag_kept_factors
+from factor_engine.factories.fundamental.field_governance import (
+    load_field_governance,
+    save_field_governance_snapshot,
+    summarize_field_governance,
+)
 from factor_engine.factories.fundamental.local_calc_fund import generate_snapshot_calendar
 from factor_engine.factories.fundamental.pipeline_fund import run_hybrid_pipeline
 from factor_engine.factories.fundamental.prompt_fund import (
@@ -164,6 +169,7 @@ def main() -> None:
 
     data_path = Path(get_env("FACTOR_FACTORY_FUND_DATA_PATH", default=str(DEFAULT_FUND_DATA_DIR)) or DEFAULT_FUND_DATA_DIR)
     fields_path = Path(get_env("FACTOR_FACTORY_FUND_FIELDS_PATH", default=str(DEFAULT_FIELDS_PATH)) or DEFAULT_FIELDS_PATH)
+    governance_path_env = get_env("FACTOR_FACTORY_FUND_GOVERNANCE_PATH", default="") or ""
     base_instruction = get_env(
         "FACTOR_FACTORY_FUND_BASE_INSTRUCTION",
         default="请开始挖掘高 alpha 的基本面因子",
@@ -190,10 +196,49 @@ def main() -> None:
         if field not in exclude_fields
         and not any(keyword in field for keyword in exclude_keywords)
     ]
+    governance_path = None
+    if governance_path_env:
+        governance_path = Path(governance_path_env)
+        if not governance_path.is_absolute():
+            governance_path = PROJECT_ROOT / governance_path
+
+    field_governance = load_field_governance(
+        useful_fields=useful_fields,
+        path=governance_path,
+    )
+    useful_fields = field_governance["allowed_fields"]
+    governance_summary = summarize_field_governance(field_governance)
+    save_field_governance_snapshot(
+        field_governance,
+        fund_config.field_governance_json,
+    )
     print(f"[Fund Factory] Excluded by exact name: {sorted(exclude_fields)}")
     print(f"[Fund Factory] Excluded by keyword: {exclude_keywords}")
 
-    print(f"[Fund Factory] Loaded {len(useful_fields)} allowed fields from: {fields_path}")
+    print(f"[Fund Factory] Loaded {len(all_fields)} raw fields from: {fields_path}")
+    print(
+        "[Fund Factory] Governance source: "
+        f"{field_governance['source_path'] or 'default-auto'}"
+    )
+    print(f"[Fund Factory] Governance summary: {governance_summary}")
+    if field_governance["focus_fields"]:
+        print(
+            "[Fund Factory] Focus fields sample: "
+            f"{field_governance['focus_fields'][:10]}"
+        )
+    if field_governance["denominator_fields"]:
+        print(
+            "[Fund Factory] Denominator fields: "
+            f"{field_governance['denominator_fields']}"
+        )
+    unknown_fields = {
+        key: value
+        for key, value in field_governance.get("unknown_fields", {}).items()
+        if value
+    }
+    if unknown_fields:
+        print(f"[Fund Factory] Governance unknown fields ignored: {unknown_fields}")
+    print(f"[Fund Factory] Effective allowed fields: {len(useful_fields)}")
     style_keys = list(CICC_STRATEGIES.keys())
 
     for round_idx in range(macro_rounds):
@@ -224,6 +269,7 @@ def main() -> None:
             config=fund_config,
             data_folders=str(data_path),
             useful_fields=useful_fields,
+            field_governance=field_governance,
             input_instruction=current_user_instruction,
             client1=client_judge_doctor,
             client2=client_coder,
@@ -259,6 +305,7 @@ def main() -> None:
                 client2=client_coder,
                 data_folders=str(data_path),
                 useful_fields=useful_fields,
+                field_governance=field_governance,
                 snapshot_days=snapshot_days,
                 max_rounds=evolution_rounds,
                 enable_local_factor_save=enable_local_factor_save,

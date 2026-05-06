@@ -38,6 +38,10 @@ class FactoryConfig:
         self.research_notes_csv = os.path.join(opt_dir, f"research_notes_{self.version}.csv")
         self.referee_notes_csv = os.path.join(opt_dir, f"research_referee_notes_{self.version}.csv")
         self.tags_registry_csv = os.path.join(opt_dir, f"factor_tags_registry_{self.version}.csv")
+        self.field_governance_json = os.path.join(
+            opt_dir,
+            f"field_governance_{self.version}.json",
+        )
 
         self._make_dirs()
 
@@ -58,6 +62,7 @@ class FactoryConfig:
             self.research_notes_csv,
             self.referee_notes_csv,
             self.tags_registry_csv,
+            self.field_governance_json,
             self.db_path,
         ]:
             os.makedirs(os.path.dirname(file_path), exist_ok=True)
