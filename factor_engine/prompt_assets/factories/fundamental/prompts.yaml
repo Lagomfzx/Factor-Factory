@@ -1,34 +1,69 @@
 CICC_STRATEGIES:
-  盈利能力 (Profitability):
-    desc: 核心是投入产出效率。请重点挖掘反映【股东回报率】和【利润结构】的因子。
+  Round_1_应计异象与盈余质量 (Accruals & Earnings Quality):
+    desc: 专注维度：利润的现金含量。核心是利用现金流质证利润，挖掘【纸面富贵】与【真金白银】的背离。
     logic: |-
-      1. 杜邦分析拆解：净利率 × 周转率 × 杠杆。
-      2. 核心利润占比：扣非净利润/净利润，排除噪音。
-    fields: IS_NETPROFIT (净利), BS_TOTALEQUITY (净资产), IS_OPERATINGREVENUE (营收)
-  成长能力 (Growth):
-    desc: 核心是增长的可持续性。请重点挖掘反映【内生增长】而非并购带来的增长。
+      1. 净利现金含量：经营现金流 / 净利润，识别利润是否真正回款。
+      2. 营收真金白银率：销售商品提供劳务收到的现金 / 营业收入，检验收入质量。
+      3. 资产应计项水分（反向）：(净利润 - 经营现金流) / 总资产，抓应计利润堆积。
+      4. 可以融合多期 Delay / TS_Mean，寻找现金流验证持续改善或持续恶化的尾部公司。
+    fields: IS_NETPROFIT, CFS_NETOPERATECASHFLOW, IS_OPERATINGREVENUE, CFS_GOODSSALESERVICERENDERCASH, BS_TOTALASSETS
+  Round_2_营运剪刀差与渠道压货预警 (Operational Scissors & Channel Stuffing):
+    desc: 专注维度：资产负债表与利润表增速的不匹配。严禁再计算利润与现金流的差值，必须聚焦【应收账款】、【存货】和【合同负债/预收】。
     logic: |-
-      1. 结合现金流验证增长质量：营收增长的同时，现金流是否同步增长？
-      2. 连续性：使用 Delay 函数计算同比(YOY)和环比(QOQ)。
-    fields: IS_REVENUE, IS_NETPROFIT, CFS_NETOPERATECASHFLOW (需计算 YOY)
-  盈余质量 (Earnings Quality):
-    desc: 核心是利润的含金量。请重点挖掘反映【纸面富贵 vs 真金白银】的背离。
+      1. 应收营收剪刀差（反向）：应收账款 YOY 增速 - 营业收入 YOY 增速，差值越大，渠道压货或回款恶化风险越高。
+      2. 存货营收剪刀差（反向）：存货 YOY 增速 - 营业收入 YOY 增速，识别需求走弱和库存积压。
+      3. 订单蓄水池：合同负债 + 预收账款相对营业收入的比例，比例越高，未来收入兑现确定性越强。
+      4. 优先构造“应收/存货恶化 + 订单蓄水池不足”的坏尾部，以及“订单蓄水池改善 + 存货消化”的好尾部。
+    fields: BS_ACCOUNTRECEIVABLE, IS_OPERATINGREVENUE, BS_INVENTORIES, BS_CONTRACTLIABILITY, BS_ADVANCERECEIPTS
+  Round_3_研发驱动与隐性护城河 (R&D Moats):
+    desc: 专注维度：科技制造企业的隐性资产还原。核心是区分【真正的费用】、【未来护城河】和【资本化保利润】。
     logic: |-
-      1. 现金流匹配度：经营性现金流 / 净利润。
-      2. 应计项异动：净利润 - 经营现金流（Accruals）。
-    fields: CFS_NETOPERATECASHFLOW, IS_NETPROFIT, BS_ACCOUNTS_RECEIVABLE (应收账款)
-  营运效率 (Operating Efficiency):
-    desc: 核心是资产周转速度。请重点挖掘反映【去库存能力】和【资金占用】的因子。
+      1. 研发投入强度：研发费用 / 营业收入，识别持续投入型公司。
+      2. 研发加回核心利润率：(营业利润 + 研发费用) / 营业收入，还原真实业务盈利能力。
+      3. 研发资本化避雷（反向）：开发支出 / 研发费用，骤增通常意味着利润平滑或强行保利润。
+      4. 融合费用纪律：研发强度提升必须尽量伴随收入、营业利润或现金流验证，避免“高研发 + 低兑现”的伪护城河。
+    fields: IS_RANDD, IS_OPERATINGREVENUE, IS_OPERATINGPROFIT, BS_DEVELOPMENTEXPENDITURE, CFS_NETOPERATECASHFLOW
+  Round_4_软资产虚胖与减值排雷 (Soft Assets & Impairment Red Flags):
+    desc: 专注维度：资产负债表左侧的虚胖与洗大澡风险。严禁计算常规偿债比率，重点识别【软资产沉淀】、【隐蔽资金占用】和【减值侵蚀】。
     logic: |-
-      1. 关键周转率：营收 / (期初+期末平均资产)。
-      2. 营运周期：存货周转天数 + 应收账款周转天数。
-    fields: IS_OPERATINGCOST, BS_INVENTORY, BS_TOTALASSETS
-  资本结构与安全 (Solvency & Safety):
-    desc: 核心是抗风险能力。请重点挖掘反映【债务压力】和【短期偿付能力】的因子。
+      1. 软资产占比（反向）：商誉、无形资产、递延所得税资产、长期待摊费用相对总资产占比，比例越高越危险。
+      2. 隐蔽资金占用（反向）：其他应收款 / 总资产，异常偏高可能代表资金占用或关联方风险。
+      3. 减值侵蚀度（反向）：资产减值损失、信用减值损失相对营业利润的压力。
+      4. 融合资产负债表重构：关注软资产扩张是否没有对应收入/利润释放，抓“资产虚胖但经营不跟”的尾部。
+    fields: BS_GOODWILL, BS_INTANGIBLEASSETS, BS_DEFERREDTAXASSETS, BS_LONGDEFERREDEXPENSE, BS_TOTALASSETS, BS_OTHERRECEIVABLE, IS_ASSETIMPAIRMENTLOSS, IS_CREDITIMPAIRMENTP, IS_OPERATINGPROFIT, IS_OPERATINGREVENUE
+  Round_5_自由现金流与资本开支克制 (FCF & CapEx Discipline):
+    desc: 专注维度：企业真实的内生造血、资本配置效率与盲目扩张风险。严禁使用利润表科目，必须聚焦现金流量表中的【经营活动】与【投资活动】。
     logic: |-
-      1. 刚性债务占比：带息债务 / 总投入资本。
-      2. 短期流动性：(货币资金+交易性金融资产) / 短期负债。
-    fields: BS_TOTAL_LIABILITIES, BS_TOTALASSETS, BS_CASH_EQUIVALENTS
+      1. 纯财务 FCF 回报率：(经营现金流 - 购建固定无形资产支付的现金) / 总资产。
+      2. 资本支出克制率（反向）：购建资产支付现金 / 经营现金流，大于 1 说明造血赶不上花钱，可能处于危险扩张期。
+      3. 资本配置效率：资本开支上升后，经营现金流是否随后改善；若持续无改善，应惩罚。
+      4. 优先寻找“高 FCF + 低盲目扩张”的质量尾部，以及“经营现金流弱 + 资本开支激进”的风险尾部。
+    fields: CFS_NETOPERATECASHFLOW, CFS_FIXINTANOTHERASSETACQUICASH, CFS_NETINVESTCASHFLOW, BS_TOTALASSETS
+  Round_6_基本面动量与业绩加速 (Fundamental Acceleration):
+    desc: 专注维度：财报的时序二阶导、经营杠杆与边际超预期。严禁计算简单静态指标，必须引入 Delay / Delta / TS_Mean 捕捉变化率和加速度。
+    logic: |-
+      1. 核心利润加速：当前营业利润环比或同比增速，减去上一期对应增速，寻找拐点。
+      2. 营收加速：营业收入 YOY 增速减去过去多期 YOY 增速均值。
+      3. SUE 财务平替：净利润同比增量 / 过去多期净利润增量的绝对均值或标准差。
+      4. 经营杠杆释放：收入温和改善时，营业利润或净利润改善更快；收入放缓时，利润坍塌更快的反向尾部也要识别。
+    fields: IS_OPERATINGPROFIT, IS_OPERATINGREVENUE, IS_NETPROFIT, IS_NPPARENTCOMPANYOWNERS, IS_OPERATINGCOST, IS_OPERATINGEXPENSE
+  Round_7_极限债务压迫与流动性枯竭 (Liquidity Distress):
+    desc: 专注维度：极端短贷长投、资金链断裂风险和刚性利息压迫。替代传统资产负债率，重点抓真正危险的流动性尾部。
+    logic: |-
+      1. 短期流动性枯竭（反向）：短期借款 / (货币资金 + 交易性金融资产)，远大于 1 说明短债压力大。
+      2. 刚性利息压迫（反向）：财务费用 / 营业利润，衡量经营成果被利息吞噬的程度。
+      3. 现金缓冲恶化：货币资金下降、短期债务上升、经营现金流偏弱同时出现时，应强化风险识别。
+      4. 避免泛化偿债指标，优先构造能抓极端风险公司的尖锐表达。
+    fields: BS_SHORTTERMLOAN, BS_CASH, BS_TRADINGASSETS, IS_FINANCIALEXPENSE, IS_OPERATINGPROFIT, CFS_NETOPERATECASHFLOW
+  Round_8_无监督探索与高阶非线性复合 (Unsupervised & Non-linear Alpha):
+    desc: 专注维度：打破传统财务分析框架的跨表高维特征挖掘。请进行大胆的【突变式】复合构造，寻找反直觉但经济逻辑自洽的预期差因子。
+    logic: |-
+      1. 严禁线性堆叠：禁止直接计算常规利润率或周转率，鼓励使用高阶交叉运算，如 A * B / C，或 Delta(A) / TS_Mean(B)。
+      2. 跨域融合：强制将资产负债表的存量结构与利润表/现金流量表的流量变动进行乘除交叉。
+      3. 量纲一致性铁律：绝对值科目与比率/增速科目严禁直接相加减，必须通过乘除法或排名差构建合理经济特征。
+      4. 寻找异象组合：重点关注“高研发 + 低现金流”、“高预收 + 低营收增速”、“高软资产 + 高减值”、“高资本开支 + 低经营现金流”等矛盾状态。
+      5. 可以调用白名单中的任意财务科目，但公式必须能解释它抓的是哪一种财务尾部公司。
+    fields: BS_TOTALASSETS, BS_TOTALLIABILITY, BS_TOTALCURRENTASSETS, BS_TOTALCURRENTLIABILITY, BS_ACCOUNTRECEIVABLE, BS_INVENTORIES, BS_GOODWILL, BS_INTANGIBLEASSETS, IS_OPERATINGREVENUE, IS_OPERATINGPROFIT, IS_NETPROFIT, IS_RANDD, CFS_NETOPERATECASHFLOW, CFS_NETINVESTCASHFLOW, CFS_NETFINANCECASHFLOW
 STAGE1_SYSTEM_PROMPT_TEMPLATE: |-
   你是一位专注于**企业内在价值分析**的资深财务专家，同时也是一名资深量化研究员。
   你的目标是基于**纯粹的财务报表数据**，挖掘反映企业经营质量和成长潜力的 Alpha 选股因子。
