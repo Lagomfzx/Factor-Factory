@@ -23,15 +23,15 @@ def _check_window(d): return max(1, int(d)) # d=1 就是回溯1个切片
 def CS_Rank(x): return _ensure_df(x).rank(axis=1, pct=True)
 
 # --- 高级截面 (行业中性) ---
-def CS_Indus_Rank(x, indus_matrix):
-    x = _ensure_df(x)
-    if indus_matrix is None: return CS_Rank(x)
-    try:
-        if isinstance(indus_matrix, pd.Series): indus_matrix = indus_matrix.to_frame()
-        df_long = pd.concat([x.stack(), indus_matrix.stack()], axis=1, keys=['val', 'ind'], join='inner')
-        ranked = df_long.groupby([df_long.index.get_level_values(0), 'ind'])['val'].rank(pct=True)
-        return ranked.unstack()
-    except: return CS_Rank(x)
+# def CS_Indus_Rank(x, indus_matrix):
+#     x = _ensure_df(x)
+#     if indus_matrix is None: return CS_Rank(x)
+#     try:
+#         if isinstance(indus_matrix, pd.Series): indus_matrix = indus_matrix.to_frame()
+#         df_long = pd.concat([x.stack(), indus_matrix.stack()], axis=1, keys=['val', 'ind'], join='inner')
+#         ranked = df_long.groupby([df_long.index.get_level_values(0), 'ind'])['val'].rank(pct=True)
+#         return ranked.unstack()
+#     except: return CS_Rank(x)
 
 # 建议添加到算子库
 def TTM(x):
@@ -237,15 +237,6 @@ def _check_window(d): return max(1, int(d)) # d=1 就是回溯1个切片
 # --- 2. 截面算子 ---
 def CS_Rank(x): return _ensure_df(x).rank(axis=1, pct=True)
 
-def CS_Indus_Rank(x, indus_matrix):
-    x = _ensure_df(x)
-    if indus_matrix is None: return CS_Rank(x)
-    try:
-        if isinstance(indus_matrix, pd.Series): indus_matrix = indus_matrix.to_frame()
-        df_long = pd.concat([x.stack(), indus_matrix.stack()], axis=1, keys=['val', 'ind'], join='inner')
-        ranked = df_long.groupby([df_long.index.get_level_values(0), 'ind'])['val'].rank(pct=True)
-        return ranked.unstack()
-    except: return CS_Rank(x)
 
 # --- 3. 基础变换 ---
 def TTM(x): 

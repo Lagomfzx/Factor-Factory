@@ -3,8 +3,13 @@ import os
 
 import pandas as pd
 
-from factor_engine.common.platform_api import EXTREME_GROUP_DAILY_TARGET
-from factor_engine.common.platform_api import submit_batch_factors
+from factor_engine.common.platform_api import (
+    FUND_LONG_NEGATIVE_DAILY_TARGET_ABS,
+    FUND_LONG_POSITIVE_DAILY_FLOOR,
+    FUND_RECENT_NEGATIVE_DAILY_TARGET_ABS,
+    FUND_RECENT_POSITIVE_DAILY_TARGET,
+    submit_batch_factors,
+)
 from factor_engine.common.storage import (
     OptimizationStorage,
     sync_to_streamlit_registry,
@@ -22,6 +27,22 @@ from factor_engine.optimizer.fundamental.llm_agents_fund import (
     run_doctor_step_fund,
 )
 from factor_engine.optimizer.fundamental.prompts_opt_fund import FUND_REFEREE_PROMPT
+
+
+def _metric_float(metrics, key, default=0.0):
+    try:
+        return float(metrics.get(key, default) or default)
+    except Exception:
+        return default
+
+
+def _metric_bool(metrics, key, default=False):
+    value = metrics.get(key, default)
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, str):
+        return value.strip().lower() in {"true", "1", "yes"}
+    return bool(value)
 
 
 def run_evolutionary_loop_fund(
@@ -54,7 +75,13 @@ def run_evolutionary_loop_fund(
             print("[Stop] No remaining optimization tasks.")
             break
 
-        prescriptions = run_doctor_step_fund(current_queue, client1, round_idx)
+        prescriptions = run_doctor_step_fund(
+            current_queue,
+            client1,
+            round_idx,
+            useful_fields=useful_fields,
+            field_governance=field_governance,
+        )
         new_factors = run_coder_step_fund(
             prescriptions,
             client2,
@@ -121,32 +148,66 @@ def run_evolutionary_loop_fund(
                 continue
 
             parent_task = next((p for p in current_queue if p["name"] == task["Parent_Name"]), None)
-            parent_ic = parent_task.get("metrics", {}).get("RankIC", 0) if parent_task else 0
-            parent_icir = parent_task.get("metrics", {}).get("ICIR", 0) if parent_task else 0
+            parent_metrics = parent_task.get("metrics", {}) if parent_task else {}
+            parent_ic = parent_metrics.get("RankIC", 0)
+            parent_icir = parent_metrics.get("ICIR", 0)
             parent_pivot_count = parent_task.get("pivot_count", 0) if parent_task else 0
 
-            parent_extreme_excess = (
-                parent_task.get("metrics", {}).get("ExtremeGroupMaxExcess", 0)
-                if parent_task
-                else 0
-            )
-            parent_extreme_daily = (
-                parent_task.get("metrics", {}).get("ExtremeGroupDailyExcess", 0)
-                if parent_task
-                else 0
-            )
-            child_extreme_excess = child_metrics.get("ExtremeGroupMaxExcess", 0)
-            child_extreme_daily = child_metrics.get("ExtremeGroupDailyExcess", 0)
+            parent_best_side = parent_metrics.get("BestExtremeSide", "UNKNOWN")
+            parent_top_daily = _metric_float(parent_metrics, "TopGroupDailyRet")
+            parent_bottom_daily = _metric_float(parent_metrics, "BottomGroupDailyRet")
+            parent_positive_daily = _metric_float(parent_metrics, "PositiveAlphaDaily")
+            parent_negative_abs = _metric_float(parent_metrics, "NegativeAlphaDailyAbs")
+            parent_recent_years = parent_metrics.get("RecentYears", [])
+            parent_recent_positive_daily = _metric_float(parent_metrics, "RecentPositiveAlphaDaily")
+            parent_recent_negative_abs = _metric_float(parent_metrics, "RecentNegativeAlphaAbs")
+            parent_recent_positive_all = _metric_bool(parent_metrics, "RecentPositiveAllPositive")
+            parent_recent_negative_all = _metric_bool(parent_metrics, "RecentNegativeAllNegative")
+            parent_extreme_excess = _metric_float(parent_metrics, "ExtremeGroupMaxExcess")
+            parent_extreme_daily = _metric_float(parent_metrics, "ExtremeGroupDailyExcess")
+
+            child_best_side = child_metrics.get("BestExtremeSide", "UNKNOWN")
+            child_top_daily = _metric_float(child_metrics, "TopGroupDailyRet")
+            child_bottom_daily = _metric_float(child_metrics, "BottomGroupDailyRet")
+            child_positive_daily = _metric_float(child_metrics, "PositiveAlphaDaily")
+            child_negative_abs = _metric_float(child_metrics, "NegativeAlphaDailyAbs")
+            child_recent_years = child_metrics.get("RecentYears", [])
+            child_recent_positive_daily = _metric_float(child_metrics, "RecentPositiveAlphaDaily")
+            child_recent_negative_abs = _metric_float(child_metrics, "RecentNegativeAlphaAbs")
+            child_recent_positive_all = _metric_bool(child_metrics, "RecentPositiveAllPositive")
+            child_recent_negative_all = _metric_bool(child_metrics, "RecentNegativeAllNegative")
+            child_extreme_excess = _metric_float(child_metrics, "ExtremeGroupMaxExcess")
+            child_extreme_daily = _metric_float(child_metrics, "ExtremeGroupDailyExcess")
 
             prompt_compare = FUND_REFEREE_PROMPT.format(
                 parent_name=task["Parent_Name"],
                 parent_ic=parent_ic,
                 parent_icir=parent_icir,
+                parent_best_side=parent_best_side,
+                parent_top_daily=parent_top_daily,
+                parent_bottom_daily=parent_bottom_daily,
+                parent_positive_daily=parent_positive_daily,
+                parent_negative_abs=parent_negative_abs,
+                parent_recent_years=parent_recent_years,
+                parent_recent_positive_daily=parent_recent_positive_daily,
+                parent_recent_negative_abs=parent_recent_negative_abs,
+                parent_recent_positive_all=parent_recent_positive_all,
+                parent_recent_negative_all=parent_recent_negative_all,
                 parent_extreme_daily=parent_extreme_daily,
                 parent_extreme_excess=parent_extreme_excess,
                 child_name=f_name,
                 child_ic=child_metrics["RankIC"],
                 child_icir=child_metrics["ICIR"],
+                child_best_side=child_best_side,
+                child_top_daily=child_top_daily,
+                child_bottom_daily=child_bottom_daily,
+                child_positive_daily=child_positive_daily,
+                child_negative_abs=child_negative_abs,
+                child_recent_years=child_recent_years,
+                child_recent_positive_daily=child_recent_positive_daily,
+                child_recent_negative_abs=child_recent_negative_abs,
+                child_recent_positive_all=child_recent_positive_all,
+                child_recent_negative_all=child_recent_negative_all,
                 child_extreme_daily=child_extreme_daily,
                 child_extreme_excess=child_extreme_excess,
                 doctor_prescription=task["Logic"],
@@ -158,19 +219,90 @@ def run_evolutionary_loop_fund(
                 clean_json = content.replace("```json", "").replace("```", "").strip()
                 ref_res = json.loads(clean_json)
             except Exception:
-                parent_gap = abs(EXTREME_GROUP_DAILY_TARGET - float(parent_extreme_daily or 0))
-                child_gap = abs(EXTREME_GROUP_DAILY_TARGET - float(child_extreme_daily or 0))
-                child_hit_target = float(child_extreme_daily or 0) >= EXTREME_GROUP_DAILY_TARGET
-                child_improved = child_gap < parent_gap
+                parent_positive_gap = abs(FUND_LONG_POSITIVE_DAILY_FLOOR - parent_positive_daily)
+                child_positive_gap = abs(FUND_LONG_POSITIVE_DAILY_FLOOR - child_positive_daily)
+                parent_recent_positive_gap = abs(
+                    FUND_RECENT_POSITIVE_DAILY_TARGET - parent_recent_positive_daily
+                )
+                child_recent_positive_gap = abs(
+                    FUND_RECENT_POSITIVE_DAILY_TARGET - child_recent_positive_daily
+                )
+                parent_negative_gap = abs(FUND_LONG_NEGATIVE_DAILY_TARGET_ABS - parent_negative_abs)
+                child_negative_gap = abs(FUND_LONG_NEGATIVE_DAILY_TARGET_ABS - child_negative_abs)
+                parent_recent_negative_gap = abs(
+                    FUND_RECENT_NEGATIVE_DAILY_TARGET_ABS - parent_recent_negative_abs
+                )
+                child_recent_negative_gap = abs(
+                    FUND_RECENT_NEGATIVE_DAILY_TARGET_ABS - child_recent_negative_abs
+                )
+                child_hit_positive = (
+                    child_positive_daily >= FUND_LONG_POSITIVE_DAILY_FLOOR
+                    and child_recent_positive_all
+                    and child_recent_positive_daily >= FUND_RECENT_POSITIVE_DAILY_TARGET
+                    and (
+                        child_positive_daily >= parent_positive_daily
+                        or child_recent_positive_daily >= parent_recent_positive_daily
+                    )
+                )
+                child_improved_positive = (
+                    child_positive_daily > parent_positive_daily
+                    or (child_recent_positive_all and child_recent_positive_daily > parent_recent_positive_daily)
+                    or (
+                        parent_positive_daily < FUND_LONG_POSITIVE_DAILY_FLOOR
+                        and child_positive_gap < parent_positive_gap
+                    )
+                    or (
+                        child_recent_positive_all
+                        and parent_recent_positive_daily < FUND_RECENT_POSITIVE_DAILY_TARGET
+                        and child_recent_positive_gap < parent_recent_positive_gap
+                    )
+                )
+                child_hit_negative = (
+                    child_negative_abs >= FUND_LONG_NEGATIVE_DAILY_TARGET_ABS
+                    and child_recent_negative_all
+                    and child_recent_negative_abs >= FUND_RECENT_NEGATIVE_DAILY_TARGET_ABS
+                    and (
+                        child_negative_abs >= parent_negative_abs
+                        or child_recent_negative_abs >= parent_recent_negative_abs
+                    )
+                )
+                child_improved_negative = (
+                    child_negative_abs > parent_negative_abs
+                    or (child_recent_negative_all and child_recent_negative_abs > parent_recent_negative_abs)
+                    or (
+                        parent_negative_abs < FUND_LONG_NEGATIVE_DAILY_TARGET_ABS
+                        and child_negative_gap < parent_negative_gap
+                    )
+                    or (
+                        child_recent_negative_all
+                        and parent_recent_negative_abs < FUND_RECENT_NEGATIVE_DAILY_TARGET_ABS
+                        and child_recent_negative_gap < parent_recent_negative_gap
+                    )
+                )
+                child_has_progress = (
+                    child_hit_positive
+                    or child_improved_positive
+                    or child_hit_negative
+                    or child_improved_negative
+                )
                 ref_res = {
-                    "decision": "WIN" if child_hit_target or child_improved else "LOSE",
+                    "decision": "WIN" if child_has_progress else "LOSE",
                     "action": (
                         "KEEP"
-                        if child_hit_target
-                        else ("EVOLVE" if child_improved else "PIVOT")
+                        if child_hit_positive
+                        else ("EVOLVE" if child_has_progress else "PIVOT")
                     ),
-                    "reason": "Fallback decision based on closeness to the 0.0004 extreme-group daily target.",
-                    "diagnosis": "Continue optimizing specifically for extreme-group daily excess toward 0.0004.",
+                    "reason": (
+                        "Fallback decision prioritizes long-horizon positive floor 0.0002 "
+                        "plus recent positive persistence near 0.0004; negative factors require "
+                        "long-horizon -0.0004 and recent -0.0006 style tail evidence."
+                    ),
+                    "diagnosis": (
+                        "Continue optimizing for a simple positive fundamental alpha: "
+                        "first clear the long-horizon 0.0002 floor, then make recent high-group "
+                        "returns persistently positive and close to 0.0004. Only keep negative-tail "
+                        "direction if the logic is explicitly risk/removal and recent downside persists."
+                    ),
                 }
 
             this_round_decisions.append(

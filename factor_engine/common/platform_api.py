@@ -17,6 +17,12 @@ EXTREME_GROUP_ANNUAL_TARGET = round(EXTREME_GROUP_DAILY_TARGET * 252, 4)
 PRICE_VOLUME_LONG_DAILY_TARGET = 0.0008
 PRICE_VOLUME_SHORT_DAILY_TARGET_ABS = 0.0002
 
+FUND_LONG_POSITIVE_DAILY_FLOOR = 0.0002
+FUND_RECENT_POSITIVE_DAILY_TARGET = 0.0004
+FUND_LONG_NEGATIVE_DAILY_TARGET_ABS = 0.0004
+FUND_RECENT_NEGATIVE_DAILY_TARGET_ABS = 0.0006
+FUND_RECENT_YEAR_COUNT = 2
+
 
 def _to_float(value):
     try:
@@ -38,6 +44,122 @@ def _pick_group_by_hint(group_metrics, hints):
         if any(_matches_hint(key_str, hint) for hint in hints) and isinstance(value, dict):
             return value
     return {}
+
+
+def _safe_mean(values):
+    clean_values = [_to_float(value) for value in values if value is not None]
+    if not clean_values:
+        return 0.0
+    return sum(clean_values) / len(clean_values)
+
+
+def _metrics_by_year_rows(metrics_by_year):
+    if isinstance(metrics_by_year, list):
+        return [row for row in metrics_by_year if isinstance(row, dict)]
+
+    if not isinstance(metrics_by_year, dict):
+        return []
+
+    list_lengths = [
+        len(value)
+        for value in metrics_by_year.values()
+        if isinstance(value, list)
+    ]
+    if not list_lengths:
+        return []
+
+    row_count = min(list_lengths)
+    rows = []
+    for idx in range(row_count):
+        row = {}
+        for key, value in metrics_by_year.items():
+            row[key] = value[idx] if isinstance(value, list) and idx < len(value) else value
+        rows.append(row)
+    return rows
+
+
+def extract_yearly_group_metrics(raw_result_item, recent_year_count=FUND_RECENT_YEAR_COUNT):
+    rows = _metrics_by_year_rows(raw_result_item.get("metrics_by_year"))
+    if not rows:
+        return {
+            "RecentYears": [],
+            "YearlyTopGroupDailyRet": {},
+            "YearlyBottomGroupDailyRet": {},
+            "RecentTopGroupDailyRetList": [],
+            "RecentBottomGroupDailyRetList": [],
+            "RecentTopGroupAvgDaily": 0.0,
+            "RecentBottomGroupAvgDaily": 0.0,
+            "RecentPositiveAlphaDaily": 0.0,
+            "RecentNegativeAlphaAbs": 0.0,
+            "RecentPositiveAllPositive": False,
+            "RecentNegativeAllNegative": False,
+            "HitFundRecentPositiveTarget": False,
+            "HitFundRecentNegativeTarget": False,
+        }
+
+    top_by_year = {}
+    bottom_by_year = {}
+    years = set()
+    for row in rows:
+        year_value = row.get("年份")
+        group_value = row.get("分组")
+        try:
+            year = int(year_value)
+        except Exception:
+            continue
+
+        years.add(year)
+        group_num = _to_float(group_value)
+        group_str = str(group_value).strip().lower()
+        daily_ret = _to_float(row.get("日均收益"))
+        is_top_group = abs(group_num - 10.0) < 1e-9 or any(
+            _matches_hint(group_str, hint)
+            for hint in ["极大", "最大", "long", "top", "high", "group10", "decile10"]
+        )
+        is_bottom_group = abs(group_num - 1.0) < 1e-9 or any(
+            _matches_hint(group_str, hint)
+            for hint in ["极小", "最小", "short", "bottom", "low", "group1", "decile1"]
+        )
+        if is_top_group:
+            top_by_year[year] = daily_ret
+        elif is_bottom_group:
+            bottom_by_year[year] = daily_ret
+
+    sorted_years = sorted(years)
+    recent_years = sorted_years[-recent_year_count:] if recent_year_count > 0 else []
+    recent_top = [top_by_year[year] for year in recent_years if year in top_by_year]
+    recent_bottom = [bottom_by_year[year] for year in recent_years if year in bottom_by_year]
+
+    top_avg = _safe_mean(recent_top)
+    bottom_avg = _safe_mean(recent_bottom)
+    recent_positive_all_positive = (
+        len(recent_top) == len(recent_years) and bool(recent_top) and all(value > 0 for value in recent_top)
+    )
+    recent_negative_all_negative = (
+        len(recent_bottom) == len(recent_years) and bool(recent_bottom) and all(value < 0 for value in recent_bottom)
+    )
+    recent_positive_alpha = max(top_avg, 0.0)
+    recent_negative_alpha_abs = max(-bottom_avg, 0.0)
+
+    return {
+        "RecentYears": recent_years,
+        "YearlyTopGroupDailyRet": {str(year): round(value, 6) for year, value in sorted(top_by_year.items())},
+        "YearlyBottomGroupDailyRet": {str(year): round(value, 6) for year, value in sorted(bottom_by_year.items())},
+        "RecentTopGroupDailyRetList": [round(value, 6) for value in recent_top],
+        "RecentBottomGroupDailyRetList": [round(value, 6) for value in recent_bottom],
+        "RecentTopGroupAvgDaily": round(top_avg, 6),
+        "RecentBottomGroupAvgDaily": round(bottom_avg, 6),
+        "RecentPositiveAlphaDaily": round(recent_positive_alpha, 6),
+        "RecentNegativeAlphaAbs": round(recent_negative_alpha_abs, 6),
+        "RecentPositiveAllPositive": recent_positive_all_positive,
+        "RecentNegativeAllNegative": recent_negative_all_negative,
+        "HitFundRecentPositiveTarget": (
+            recent_positive_all_positive and recent_positive_alpha >= FUND_RECENT_POSITIVE_DAILY_TARGET
+        ),
+        "HitFundRecentNegativeTarget": (
+            recent_negative_all_negative and recent_negative_alpha_abs >= FUND_RECENT_NEGATIVE_DAILY_TARGET_ABS
+        ),
+    }
 
 
 def _extract_group_curve_summary(group_metrics):
@@ -206,6 +328,7 @@ def clean_platform_result(raw_result_item):
     raw_turnover = raw_result_item.get("turnover") or raw_result_item.get("long_short_turnover")
 
     extreme_metrics = extract_extreme_group_metrics(raw_result_item)
+    yearly_metrics = extract_yearly_group_metrics(raw_result_item)
     top_ret = extreme_metrics["TopGroupDailyRet"]
     bottom_ret = extreme_metrics["BottomGroupDailyRet"]
 
@@ -225,6 +348,16 @@ def clean_platform_result(raw_result_item):
         "NegativeAlphaDailyAbs": extreme_metrics["NegativeAlphaDailyAbs"],
         "HitLongTarget": extreme_metrics["HitLongTarget"],
         "HitShortTarget": extreme_metrics["HitShortTarget"],
+        "FundLongPositiveDailyFloor": FUND_LONG_POSITIVE_DAILY_FLOOR,
+        "FundRecentPositiveDailyTarget": FUND_RECENT_POSITIVE_DAILY_TARGET,
+        "FundLongNegativeDailyTargetAbs": FUND_LONG_NEGATIVE_DAILY_TARGET_ABS,
+        "FundRecentNegativeDailyTargetAbs": FUND_RECENT_NEGATIVE_DAILY_TARGET_ABS,
+        "HitFundLongPositiveFloor": (
+            extreme_metrics["PositiveAlphaDaily"] >= FUND_LONG_POSITIVE_DAILY_FLOOR
+        ),
+        "HitFundLongNegativeTarget": (
+            extreme_metrics["NegativeAlphaDailyAbs"] >= FUND_LONG_NEGATIVE_DAILY_TARGET_ABS
+        ),
         "LongDailyTarget": PRICE_VOLUME_LONG_DAILY_TARGET,
         "ShortDailyTargetAbs": PRICE_VOLUME_SHORT_DAILY_TARGET_ABS,
         "GroupCurveDailyRet": extreme_metrics["GroupCurveDailyRet"],
@@ -241,6 +374,7 @@ def clean_platform_result(raw_result_item):
         "LongTargetGap": round(PRICE_VOLUME_LONG_DAILY_TARGET - max(top_ret, 0.0), 6),
         "ShortTargetGap": round(PRICE_VOLUME_SHORT_DAILY_TARGET_ABS - max(-bottom_ret, 0.0), 6),
     }
+    clean_data.update(yearly_metrics)
 
     try:
         long_short_ret = (top_ret - bottom_ret) * 252

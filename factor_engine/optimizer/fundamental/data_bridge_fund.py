@@ -3,7 +3,12 @@ import re
 from factor_engine.common.platform_api import (
     EXTREME_GROUP_ANNUAL_TARGET,
     EXTREME_GROUP_DAILY_TARGET,
+    FUND_LONG_NEGATIVE_DAILY_TARGET_ABS,
+    FUND_LONG_POSITIVE_DAILY_FLOOR,
+    FUND_RECENT_NEGATIVE_DAILY_TARGET_ABS,
+    FUND_RECENT_POSITIVE_DAILY_TARGET,
     extract_extreme_group_metrics,
+    extract_yearly_group_metrics,
 )
 
 
@@ -32,17 +37,42 @@ def build_judge_context_fund(raw_results, clean_metrics_list, llm1_raw_text, llm
         factor_name = item.get("Name")
         raw_item = raw_map.get(factor_name, {})
         extreme_metrics = extract_extreme_group_metrics(raw_item)
+        yearly_metrics = extract_yearly_group_metrics(raw_item)
 
         enriched_metrics = dict(item)
+        for price_volume_key in [
+            "LongDailyTarget",
+            "ShortDailyTargetAbs",
+            "LongTargetGap",
+            "ShortTargetGap",
+            "HitLongTarget",
+            "HitShortTarget",
+        ]:
+            enriched_metrics.pop(price_volume_key, None)
         enriched_metrics["ExtremeGroupDailyExcess"] = extreme_metrics["ExtremeGroupDailyExcess"]
         enriched_metrics["ExtremeGroupMaxExcess"] = extreme_metrics["ExtremeGroupMaxExcess"]
         enriched_metrics["BestExtremeSide"] = extreme_metrics["BestExtremeSide"]
+        enriched_metrics["TopGroupDailyRet"] = extreme_metrics["TopGroupDailyRet"]
+        enriched_metrics["BottomGroupDailyRet"] = extreme_metrics["BottomGroupDailyRet"]
+        enriched_metrics["PositiveAlphaDaily"] = extreme_metrics["PositiveAlphaDaily"]
+        enriched_metrics["NegativeAlphaDailyAbs"] = extreme_metrics["NegativeAlphaDailyAbs"]
         enriched_metrics["RawGroupMetrics"] = extreme_metrics["RawGroupMetrics"]
         enriched_metrics["ExtremeGroupDailyTarget"] = EXTREME_GROUP_DAILY_TARGET
         enriched_metrics["ExtremeGroupAnnualTarget"] = EXTREME_GROUP_ANNUAL_TARGET
         enriched_metrics["HitExtremeTarget"] = (
             extreme_metrics["ExtremeGroupDailyExcess"] >= EXTREME_GROUP_DAILY_TARGET
         )
+        enriched_metrics["FundLongPositiveDailyFloor"] = FUND_LONG_POSITIVE_DAILY_FLOOR
+        enriched_metrics["FundRecentPositiveDailyTarget"] = FUND_RECENT_POSITIVE_DAILY_TARGET
+        enriched_metrics["FundLongNegativeDailyTargetAbs"] = FUND_LONG_NEGATIVE_DAILY_TARGET_ABS
+        enriched_metrics["FundRecentNegativeDailyTargetAbs"] = FUND_RECENT_NEGATIVE_DAILY_TARGET_ABS
+        enriched_metrics["HitFundLongPositiveFloor"] = (
+            extreme_metrics["PositiveAlphaDaily"] >= FUND_LONG_POSITIVE_DAILY_FLOOR
+        )
+        enriched_metrics["HitFundLongNegativeTarget"] = (
+            extreme_metrics["NegativeAlphaDailyAbs"] >= FUND_LONG_NEGATIVE_DAILY_TARGET_ABS
+        )
+        enriched_metrics.update(yearly_metrics)
 
         final_context.append(
             {

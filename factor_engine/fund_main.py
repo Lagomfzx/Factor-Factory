@@ -177,6 +177,8 @@ def main() -> None:
     macro_rounds = get_int_env("FACTOR_FACTORY_FUND_MACRO_ROUNDS", default=1)
     evolution_rounds = get_int_env("FACTOR_FACTORY_FUND_EVOLUTION_ROUNDS", default=3)
     enable_local_factor_save = get_bool_env("FACTOR_FACTORY_FUND_ENABLE_LOCAL_FACTOR_SAVE", default=False)
+    use_history_context = get_bool_env("FACTOR_FACTORY_FUND_USE_HISTORY_CONTEXT", default=True)
+    history_max_rounds = get_int_env("FACTOR_FACTORY_FUND_HISTORY_MAX_ROUNDS", default=10)
 
     client_judge_doctor, client_coder = build_clients()
     snapshot_days = generate_snapshot_calendar(2016, 2025)
@@ -277,6 +279,8 @@ def main() -> None:
             system_prompt=current_system_prompt,
             snapshot_days=snapshot_days,
             enable_local_factor_save=enable_local_factor_save,
+            use_history_context=use_history_context,
+            history_max_rounds=history_max_rounds,
         )
 
         if not gen_res_json or not gen_res_json.get("results"):

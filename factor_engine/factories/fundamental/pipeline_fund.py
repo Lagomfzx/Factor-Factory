@@ -36,6 +36,8 @@ def run_hybrid_pipeline(
     system_prompt=None,
     snapshot_days=None,
     enable_local_factor_save=True,
+    use_history_context=True,
+    history_max_rounds=10,
 ):
     """
     Financial-factor generation pipeline aligned to the validated notebook.
@@ -58,7 +60,15 @@ def run_hybrid_pipeline(
 
     for round_i in range(max_rounds):
         print(f"\n[Hybrid Round {round_i + 1}/{max_rounds}] Starting...")
-        history_text = load_factor_history(config, max_rounds=10)
+        if use_history_context:
+            history_text = load_factor_history(config, max_rounds=history_max_rounds)
+            print(
+                "[History] Stage 1 history context enabled "
+                f"(max_rounds={history_max_rounds})."
+            )
+        else:
+            history_text = ""
+            print("[History] Stage 1 history context disabled for this run.")
 
         print("[Brain] Generating factor logic and code...")
         code_text, design_text = run_three_stages_with_memory(

@@ -1,126 +1,286 @@
 CICC_STRATEGIES:
-  Round_1_应计异象与盈余质量 (Accruals & Earnings Quality):
-    desc: 专注维度：利润的现金含量。核心是利用现金流质证利润，挖掘【纸面富贵】与【真金白银】的背离。
+  Round_0_单变量财务动量与修复 (Single Metric Fundamental Momentum):
+    desc: 专注维度：最简单、最纯粹的财务变量变化。优先从收入、营业利润、净利润、经营现金流、毛利率、资产周转率等单一口径出发，寻找同一行业内基本面正在改善的公司。
     logic: |-
-      1. 净利现金含量：经营现金流 / 净利润，识别利润是否真正回款。
-      2. 营收真金白银率：销售商品提供劳务收到的现金 / 营业收入，检验收入质量。
-      3. 资产应计项水分（反向）：(净利润 - 经营现金流) / 总资产，抓应计利润堆积。
-      4. 可以融合多期 Delay / TS_Mean，寻找现金流验证持续改善或持续恶化的尾部公司。
-    fields: IS_NETPROFIT, CFS_NETOPERATECASHFLOW, IS_OPERATINGREVENUE, CFS_GOODSSALESERVICERENDERCASH, BS_TOTALASSETS
-  Round_2_营运剪刀差与渠道压货预警 (Operational Scissors & Channel Stuffing):
-    desc: 专注维度：资产负债表与利润表增速的不匹配。严禁再计算利润与现金流的差值，必须聚焦【应收账款】、【存货】和【合同负债/预收】。
+      1. 收入增长：YOY(IS_OPERATINGREVENUE)，抓需求扩张。
+      2. 收入加速度：Delta(YOY(IS_OPERATINGREVENUE), 1)，抓需求边际上修。
+      3. 营业利润增长：YOY(IS_OPERATINGPROFIT)，抓核心经营盈利改善。
+      4. 营业利润加速度：Delta(YOY(IS_OPERATINGPROFIT), 1)，抓利润边际上修。
+      5. 经营现金流增长：YOY(CFS_NETOPERATECASHFLOW)，抓真实造血改善。
+      6. 本轮只允许单变量或单一比率的变化口径，禁止复合拼接；目标是寻找最短、最干净的财务 alpha 原型。
+    fields: IS_OPERATINGREVENUE, IS_TOTALOPERATINGREVENUE, IS_OPERATINGPROFIT, IS_TOTALPROFIT, IS_NETPROFIT, IS_NPPARENTCOMPANYOWNERS, IS_OPERSUSTNETP, IS_OPERATINGCOST, IS_TOTALOPERATINGCOST, IS_OPERATINGEXPENSE, IS_TOTALADMINEXPENSE, IS_FINANCIALEXPENSE, IS_RANDD, IS_INCOMETAXCOST, CFS_NETOPERATECASHFLOW, CFS_GOODSSALESERVICERENDERCASH, CFS_ALLTAXESPAID, BS_TOTALASSETS, BS_TOTALSHAREHOLDEREQUITY
+
+  Round_1_经典质量口径 (Classic Quality Definitions):
+    desc: 专注维度：定义干净、口径稳定、可交易的经典质量因子。优先挖掘毛利率、利润率、资产周转率、ROA/ROE、经营现金流收入比等清晰财务现象，而不是复杂叙事组合。
     logic: |-
-      1. 应收营收剪刀差（反向）：应收账款 YOY 增速 - 营业收入 YOY 增速，差值越大，渠道压货或回款恶化风险越高。
-      2. 存货营收剪刀差（反向）：存货 YOY 增速 - 营业收入 YOY 增速，识别需求走弱和库存积压。
-      3. 订单蓄水池：合同负债 + 预收账款相对营业收入的比例，比例越高，未来收入兑现确定性越强。
-      4. 优先构造“应收/存货恶化 + 订单蓄水池不足”的坏尾部，以及“订单蓄水池改善 + 存货消化”的好尾部。
-    fields: BS_ACCOUNTRECEIVABLE, IS_OPERATINGREVENUE, BS_INVENTORIES, BS_CONTRACTLIABILITY, BS_ADVANCERECEIPTS
-  Round_3_研发驱动与隐性护城河 (R&D Moats):
-    desc: 专注维度：科技制造企业的隐性资产还原。核心是区分【真正的费用】、【未来护城河】和【资本化保利润】。
+      1. 默认解释语境是“同一行业内横截面选股”：同业公司之间，谁的盈利质量、资产效率、现金兑现更好。
+      2. 毛利率口径：如 (TTM(IS_OPERATINGREVENUE) - TTM(IS_OPERATINGCOST)) / TTM(IS_OPERATINGREVENUE)，抓同业中的定价权和成本控制。
+      3. 利润率口径：如 TTM(IS_OPERATINGPROFIT) / TTM(IS_OPERATINGREVENUE)，抓核心经营利润率；也可使用单季 q 口径观察最新质量。
+      4. 周转率口径：如 TTM(IS_OPERATINGREVENUE) / TS_Mean(BS_TOTALASSETS, 3)，抓资产使用效率和轻重资产差异。
+      5. 回报率口径：如 TTM(IS_NETPROFIT) / TS_Mean(BS_TOTALASSETS, 3) 或 TTM(IS_NETPROFIT) / TS_Mean(BS_TOTALSHAREHOLDEREQUITY, 3)，抓 ROA/ROE 类质量。
+      6. 现金质量口径：如 TTM(CFS_NETOPERATECASHFLOW) / TTM(IS_OPERATINGREVENUE)，抓收入兑现能力，避免 CFO / 净利润这类危险分母。
+      7. 本轮禁止过度复合，优先单一财务口径的 q、ttm、delta 版本；每个因子必须说明数值越大对应哪种行业内质量优势。
+    fields: IS_OPERATINGREVENUE, IS_TOTALOPERATINGREVENUE, IS_OPERATINGCOST, IS_TOTALOPERATINGCOST, IS_OPERATINGPROFIT, IS_NETPROFIT, CFS_NETOPERATECASHFLOW, CFS_GOODSSALESERVICERENDERCASH, IS_OPERATINGEXPENSE, IS_TOTALADMINEXPENSE, IS_FINANCIALEXPENSE, IS_RANDD, IS_INCOMETAXCOST, CFS_ALLTAXESPAID, BS_TOTALASSETS, BS_TOTALSHAREHOLDEREQUITY
+
+  Round_2_增长修复与负转正 (Growth Repair & Change-to-Zero):
+    desc: 专注维度：财报边际修复。挖掘收入、利润、经营现金流、ROE 等从负增长向 0 修复或转正的公司，寻找市场重新定价的“从差到不差”信号。
     logic: |-
-      1. 研发投入强度：研发费用 / 营业收入，识别持续投入型公司。
-      2. 研发加回核心利润率：(营业利润 + 研发费用) / 营业收入，还原真实业务盈利能力。
-      3. 研发资本化避雷（反向）：开发支出 / 研发费用，骤增通常意味着利润平滑或强行保利润。
-      4. 融合费用纪律：研发强度提升必须尽量伴随收入、营业利润或现金流验证，避免“高研发 + 低兑现”的伪护城河。
-    fields: IS_RANDD, IS_OPERATINGREVENUE, IS_OPERATINGPROFIT, BS_DEVELOPMENTEXPENDITURE, CFS_NETOPERATECASHFLOW
-  Round_4_软资产虚胖与减值排雷 (Soft Assets & Impairment Red Flags):
-    desc: 专注维度：资产负债表左侧的虚胖与洗大澡风险。严禁计算常规偿债比率，重点识别【软资产沉淀】、【隐蔽资金占用】和【减值侵蚀】。
+      1. 默认解释语境是同一行业内比较：同业公司中，谁的基本面从低谷修复得更快。
+      2. 利润增长修复：围绕 YOY(IS_OPERATINGPROFIT)、YOY(IS_NETPROFIT) 的负值收敛、转正、或 Delta(YOY(...), 1) 改善构造。
+      3. 收入增长修复：围绕 YOY(IS_OPERATINGREVENUE) 从负增长向 0 或正增长修复，抓需求侧边际改善。
+      4. 经营现金流修复：围绕 YOY(CFS_NETOPERATECASHFLOW) 的修复，抓真实造血从差到不差。
+      5. ROA/ROE 修复：先构造 TTM(IS_NETPROFIT) / TS_Mean(BS_TOTALASSETS, 3) 或净资产口径，再观察 Delta 或 YOY 变化。
+      6. Change-to-zero 的核心不是追逐最高增速，而是抓“历史较差但当前明显修复”的边际预期差；不要硬编码阈值，优先使用 Delta、Abs、Rank_Sub/Rank_Add 等连续表达。
+      7. 本轮因子应简单、尖锐，优先单变量增长修复或“增长修复 + 现金确认”双变量结构。
+    fields: IS_OPERATINGREVENUE, IS_TOTALOPERATINGREVENUE, IS_OPERATINGPROFIT, IS_TOTALPROFIT, IS_NETPROFIT, IS_NPPARENTCOMPANYOWNERS, IS_OPERSUSTNETP, IS_OPERATINGCOST, IS_TOTALOPERATINGCOST, IS_OPERATINGEXPENSE, IS_TOTALADMINEXPENSE, IS_FINANCIALEXPENSE, IS_RANDD, IS_INCOMETAXCOST, CFS_NETOPERATECASHFLOW, CFS_GOODSSALESERVICERENDERCASH, CFS_ALLTAXESPAID, BS_TOTALASSETS, BS_TOTALSHAREHOLDEREQUITY
+
+  Round_3_基本面加速度 (Fundamental Acceleration):
+    desc: 专注维度：增长率的二阶导。挖掘利润、收入、经营现金流、毛利额、ROA/ROE 等基本面指标的加速改善，寻找财报后市场重新定价的边际动量。
     logic: |-
-      1. 软资产占比（反向）：商誉、无形资产、递延所得税资产、长期待摊费用相对总资产占比，比例越高越危险。
-      2. 隐蔽资金占用（反向）：其他应收款 / 总资产，异常偏高可能代表资金占用或关联方风险。
-      3. 减值侵蚀度（反向）：资产减值损失、信用减值损失相对营业利润的压力。
-      4. 融合资产负债表重构：关注软资产扩张是否没有对应收入/利润释放，抓“资产虚胖但经营不跟”的尾部。
-    fields: BS_GOODWILL, BS_INTANGIBLEASSETS, BS_DEFERREDTAXASSETS, BS_LONGDEFERREDEXPENSE, BS_TOTALASSETS, BS_OTHERRECEIVABLE, IS_ASSETIMPAIRMENTLOSS, IS_CREDITIMPAIRMENTP, IS_OPERATINGPROFIT, IS_OPERATINGREVENUE
-  Round_5_自由现金流与资本开支克制 (FCF & CapEx Discipline):
-    desc: 专注维度：企业真实的内生造血、资本配置效率与盲目扩张风险。严禁使用利润表科目，必须聚焦现金流量表中的【经营活动】与【投资活动】。
+      1. 默认解释语境是同一行业内比较：同业公司中，谁的收入、利润或现金流改善速度正在进一步上修。
+      2. 利润加速度：Delta(YOY(IS_OPERATINGPROFIT), 1) 或 Delta(YOY(IS_NETPROFIT), 1)，抓盈利增长继续上修。
+      3. 收入加速度：Delta(YOY(IS_OPERATINGREVENUE), 1)，抓需求侧改善是否开始加速。
+      4. 毛利额加速度：Delta(YOY(IS_OPERATINGREVENUE - IS_OPERATINGCOST), 1)，抓价格、成本和规模效应共同改善。
+      5. 现金流加速度：Delta(YOY(CFS_NETOPERATECASHFLOW), 1) 或 Delta(YOY(CFS_GOODSSALESERVICERENDERCASH), 1)，用现金端确认经营改善。
+      6. 如需降低财报切片噪音，可以使用 Delta(TS_Mean(YOY(X), 2), 1)，但不得把加速度磨成普通趋势均值。
+      7. 每个因子必须说明它抓的是哪一种二阶导，不要把多个加速度简单平均成泛动量评分。
+    fields: IS_OPERATINGREVENUE, IS_TOTALOPERATINGREVENUE, IS_OPERATINGCOST, IS_TOTALOPERATINGCOST, IS_OPERATINGPROFIT, IS_TOTALPROFIT, IS_NETPROFIT, IS_NPPARENTCOMPANYOWNERS, IS_OPERATINGEXPENSE, IS_TOTALADMINEXPENSE, IS_FINANCIALEXPENSE, IS_RANDD, CFS_NETOPERATECASHFLOW, CFS_GOODSSALESERVICERENDERCASH, CFS_ALLTAXESPAID, BS_TOTALASSETS
+
+  Round_4_SUE与标准化意外 (SUE & Standardized Fundamental Surprise):
+    desc: 专注维度：标准化的财报意外。挖掘当前利润、收入、现金流或回报率变化相对自身历史波动的异常改善，寻找真正超出历史常态的基本面惊喜。
     logic: |-
-      1. 纯财务 FCF 回报率：(经营现金流 - 购建固定无形资产支付的现金) / 总资产。
-      2. 资本支出克制率（反向）：购建资产支付现金 / 经营现金流，大于 1 说明造血赶不上花钱，可能处于危险扩张期。
-      3. 资本配置效率：资本开支上升后，经营现金流是否随后改善；若持续无改善，应惩罚。
-      4. 优先寻找“高 FCF + 低盲目扩张”的质量尾部，以及“经营现金流弱 + 资本开支激进”的风险尾部。
-    fields: CFS_NETOPERATECASHFLOW, CFS_FIXINTANOTHERASSETACQUICASH, CFS_NETINVESTCASHFLOW, BS_TOTALASSETS
-  Round_6_基本面动量与业绩加速 (Fundamental Acceleration):
-    desc: 专注维度：财报的时序二阶导、经营杠杆与边际超预期。严禁计算简单静态指标，必须引入 Delay / Delta / TS_Mean 捕捉变化率和加速度。
+      1. 默认解释语境是同一行业内比较：不是谁规模更大，而是谁相对自身历史常态出现更强的基本面惊喜。
+      2. 净利润 SUE：可用 Div(Delta(TTM(IS_NETPROFIT), 3), TS_Std(Delta(TTM(IS_NETPROFIT), 3), 6)) 近似两年标准化盈利意外。
+      3. 营业利润 SUE：对 IS_OPERATINGPROFIT 做同类标准化，减少非经营扰动。
+      4. 收入意外：对 TTM(IS_OPERATINGREVENUE) 或 YOY(IS_OPERATINGREVENUE) 的变化做历史波动标准化，抓需求超预期。
+      5. 现金流意外：对 CFS_NETOPERATECASHFLOW 的 TTM 增量或 YOY 变化做标准化，抓真实造血超预期。
+      6. SUE 类因子必须使用 Div(x, TS_Std(...)) 或历史波动做标准化，避免把大公司绝对增量误判为惊喜；分母要加稳定性思维。
+      7. 本轮重点是“相对自身历史的异常改善”，不是简单同比增长。
+    fields: IS_NETPROFIT, IS_NPPARENTCOMPANYOWNERS, IS_OPERATINGPROFIT, IS_TOTALPROFIT, IS_OPERATINGREVENUE, IS_TOTALOPERATINGREVENUE, IS_OPERATINGCOST, IS_TOTALOPERATINGCOST, IS_OPERATINGEXPENSE, IS_TOTALADMINEXPENSE, IS_FINANCIALEXPENSE, IS_INCOMETAXCOST, CFS_NETOPERATECASHFLOW, CFS_GOODSSALESERVICERENDERCASH, CFS_ALLTAXESPAID, BS_ACCOUNTRECEIVABLE, BS_INVENTORIES, BS_TOTALASSETS
+
+  Round_5_滚动趋势与持续改善 (Rolling Trend & Persistent Improvement):
+    desc: 专注维度：财务指标的持续趋势，而不是单期跳动。挖掘 TTM 利润、收入、现金流、毛利率、资产周转率、ROA/ROE 等指标的滚动改善趋势。
     logic: |-
-      1. 核心利润加速：当前营业利润环比或同比增速，减去上一期对应增速，寻找拐点。
-      2. 营收加速：营业收入 YOY 增速减去过去多期 YOY 增速均值。
-      3. SUE 财务平替：净利润同比增量 / 过去多期净利润增量的绝对均值或标准差。
-      4. 经营杠杆释放：收入温和改善时，营业利润或净利润改善更快；收入放缓时，利润坍塌更快的反向尾部也要识别。
-    fields: IS_OPERATINGPROFIT, IS_OPERATINGREVENUE, IS_NETPROFIT, IS_NPPARENTCOMPANYOWNERS, IS_OPERATINGCOST, IS_OPERATINGEXPENSE
-  Round_7_极限债务压迫与流动性枯竭 (Liquidity Distress):
-    desc: 专注维度：极端短贷长投、资金链断裂风险和刚性利息压迫。替代传统资产负债率，重点抓真正危险的流动性尾部。
+      1. 默认解释语境是同一行业内比较：同业公司中，谁的改善路径更连续，而不是只靠一季跳动。
+      2. 利润趋势：Slope(TTM(IS_NETPROFIT), 4) 或 Slope(TTM(IS_OPERATINGPROFIT), 4)，抓 TTM 盈利的持续上行趋势。
+      3. 收入趋势：Slope(TTM(IS_OPERATINGREVENUE), 4)，抓需求和规模的持续改善。
+      4. 现金流趋势：Slope(TTM(CFS_NETOPERATECASHFLOW), 4)，抓真实造血趋势。
+      5. 质量趋势：先构造毛利率、资产周转率、ROA/ROE、现金流收入比，再使用 Delta 或 Slope 观察持续改善。
+      6. 趋势类因子必须区别于单期增长率：它抓的是连续改善的路径，而不是某一期突增。
+      7. 若使用 Slope，请确保公式仍然简单；如果不用 Slope，可用 Delta(TS_Mean(X, 3), 1) 近似趋势变化。
+    fields: IS_OPERATINGREVENUE, IS_TOTALOPERATINGREVENUE, IS_OPERATINGCOST, IS_TOTALOPERATINGCOST, IS_OPERATINGPROFIT, IS_NETPROFIT, CFS_NETOPERATECASHFLOW, CFS_GOODSSALESERVICERENDERCASH, IS_OPERATINGEXPENSE, IS_TOTALADMINEXPENSE, IS_FINANCIALEXPENSE, IS_RANDD, BS_ACCOUNTRECEIVABLE, BS_INVENTORIES, BS_TOTALASSETS, BS_TOTALSHAREHOLDEREQUITY
+
+  Round_6_现金流确认与应计修正 (Cash Confirmation & Accrual Adjustment):
+    desc: 专注维度：收入和利润能否被现金流确认。挖掘销售收现、经营现金流、经营性应收释放、经营性应付支撑等现金确认现象，补充单纯利润和收入因子。
     logic: |-
-      1. 短期流动性枯竭（反向）：短期借款 / (货币资金 + 交易性金融资产)，远大于 1 说明短债压力大。
-      2. 刚性利息压迫（反向）：财务费用 / 营业利润，衡量经营成果被利息吞噬的程度。
-      3. 现金缓冲恶化：货币资金下降、短期债务上升、经营现金流偏弱同时出现时，应强化风险识别。
-      4. 避免泛化偿债指标，优先构造能抓极端风险公司的尖锐表达。
-    fields: BS_SHORTTERMLOAN, BS_TRADINGASSETS, IS_FINANCIALEXPENSE, IS_OPERATINGPROFIT, CFS_NETOPERATECASHFLOW
-  Round_8_无监督探索与高阶非线性复合 (Unsupervised & Non-linear Alpha):
-    desc: 专注维度：打破传统财务分析框架的跨表高维特征挖掘。请进行大胆的【突变式】复合构造，寻找反直觉但经济逻辑自洽的预期差因子。
+      1. 默认解释语境是同一行业内比较：同业公司中，谁的收入和利润更能兑现为现金。
+      2. 销售收现确认：Rank_Sub(YOY(CFS_GOODSSALESERVICERENDERCASH), YOY(IS_OPERATINGREVENUE))，抓回款增速跑赢收入增速。
+      3. 经营现金流收入比：TTM(CFS_NETOPERATECASHFLOW) / TTM(IS_OPERATINGREVENUE)，抓收入现金化能力。
+      4. 利润现金确认：Rank_Sub(YOY(CFS_NETOPERATECASHFLOW), YOY(IS_OPERATINGPROFIT)) 或用二者增速差识别利润是否被现金流验证。
+      5. 应收释放：Rank_Sub(YOY(IS_OPERATINGREVENUE), YOY(BS_ACCOUNTRECEIVABLE))，抓收入增长快于应收扩张。
+      6. 存货消化：Rank_Sub(YOY(IS_OPERATINGREVENUE), YOY(BS_INVENTORIES))，抓需求恢复和库存压力下降。
+      7. 应计修正：可用 (TTM(CFS_NETOPERATECASHFLOW) - TTM(IS_NETPROFIT)) / TS_Mean(BS_TOTALASSETS, 3) 表达现金利润差异，但必须解释方向，避免把风险项误当正向质量项。
+      8. 本轮公式必须围绕现金确认或营运资本释放，禁止泛泛叠加多个质量指标。
+    fields: IS_OPERATINGREVENUE, IS_OPERATINGPROFIT, IS_NETPROFIT, CFS_NETOPERATECASHFLOW, CFS_GOODSSALESERVICERENDERCASH, BS_ACCOUNTRECEIVABLE, BS_INVENTORIES, BS_TOTALASSETS
+
+  Round_7_补充型简单财务现象 (Complementary Simple Financial Phenomena):
+    desc: 专注维度：寻找能补充现有强因子库的新财务现象。重点探索费用率改善、税负验证、资本开支兑现、折旧摊销压力、非经营扰动剥离、资产轻量化等未充分覆盖的三表信号。
     logic: |-
-      1. 严禁线性堆叠：禁止直接计算常规利润率或周转率，鼓励使用高阶交叉运算，如 A * B / C，或 Delta(A) / TS_Mean(B)。
-      2. 跨域融合：强制将资产负债表的存量结构与利润表/现金流量表的流量变动进行乘除交叉。
-      3. 量纲一致性铁律：绝对值科目与比率/增速科目严禁直接相加减，必须通过乘除法或排名差构建合理经济特征。
-      4. 寻找异象组合：重点关注“高研发 + 低现金流”、“高预收 + 低营收增速”、“高软资产 + 高减值”、“高资本开支 + 低经营现金流”等矛盾状态。
-      5. 可以调用白名单中的任意财务科目，但公式必须能解释它抓的是哪一种财务尾部公司。
-    fields: BS_TOTALASSETS, BS_TOTALLIABILITY, BS_TOTALCURRENTASSETS, BS_TOTALCURRENTLIABILITY, BS_ACCOUNTRECEIVABLE, BS_INVENTORIES, BS_GOODWILL, BS_INTANGIBLEASSETS, IS_OPERATINGREVENUE, IS_OPERATINGPROFIT, IS_NETPROFIT, IS_RANDD, CFS_NETOPERATECASHFLOW, CFS_NETINVESTCASHFLOW, CFS_NETFINANCECASHFLOW
+      1. 默认解释语境是同一行业内比较：每个因子必须说明它如何在同业公司中区分更好的公司，而不是依赖行业天然差异。
+      2. 费用率改善：关注销售费用、管理费用、财务费用、研发费用相对收入的压力变化，寻找收入不一定高增但费用杠杆释放的公司。
+      3. 税负验证：关注所得税费用、支付税费与利润增长的匹配，识别利润真实性或税负正常化。
+      4. 资本开支兑现：使用 Abs(CFS_FIXINTANOTHERASSETACQUICASH) 标准化前期投入，再观察后续收入、利润或经营现金流改善。
+      5. 折旧摊销压力：关注固定资产折旧、无形资产摊销相对收入或利润的压力变化，寻找重资产周期后的利润弹性释放。
+      6. 非经营扰动剥离：比较营业利润、持续经营净利润、净利润的变化，寻找核心经营改善但净利润被非核心项扰动的公司。
+      7. 资产轻量化：收入或利润改善同时总资产扩张放缓，说明效率提升而不是单纯扩表。
+      8. 本轮每个因子只能选择一个补充现象，公式必须短，必须先说明“补充了现有因子库的哪个盲区”；不得生成没有明确财务现象的高阶拼接。
+    fields: IS_OPERATINGREVENUE, IS_OPERATINGPROFIT, IS_NETPROFIT, IS_OPERSUSTNETP, IS_OPERATINGEXPENSE, IS_TOTALADMINEXPENSE, IS_FINANCIALEXPENSE, IS_RANDD, IS_INCOMETAXCOST, CFS_ALLTAXESPAID, CFS_NETOPERATECASHFLOW, CFS_FIXEDASSETDEPRECIATION, CFS_INTANGIBLEASSETAMORTIZATION, CFS_FIXINTANOTHERASSETACQUICASH, BS_TOTALASSETS
+
+  Round_8_自由结构探索 (Free-Form Financial Logic Exploration):
+    desc: 专注维度：开放式财务逻辑探索。本轮不预设固定模板，允许模型自由组合利润表、资产负债表、现金流量表中的可用字段，寻找前面轮次没有覆盖到的简单或复合财务 Alpha。
+    logic: |-
+      1. 本轮可以突破前面轮次的固定模板，不强制局限于单变量、SUE、趋势、现金确认或结构占比。
+      2. 可以自由选择“水平、变化、加速度、标准化、比率、剪刀差、Rank 复合、跨表验证”等结构，但每个因子仍必须能用清楚的财务语言解释。
+      3. 鼓励提出前面七轮没有覆盖的新视角，例如经营资产质量、费用资本化风险、非经营扰动、金融负担、营运资本压力、税费验证、投资现金流兑现、资产扩张效率等。
+      4. 如果使用多个字段，必须说明它们共同刻画的是同一个财务问题，而不是把无关变量拼成数学评分。
+      5. 即使本轮是自由探索，也必须遵守底线：只使用白名单字段；严禁价格、市值、估值和行业字段；严禁臆造字段；公式必须可执行。
+      6. 本轮的目标是给模型一个跳出既有方向的出口，用于发现意料之外但仍然可解释的财务因子。
+    fields: IS_OPERATINGREVENUE, IS_TOTALOPERATINGREVENUE, IS_OPERATINGCOST, IS_TOTALOPERATINGCOST, IS_OPERATINGPROFIT, IS_TOTALPROFIT, IS_NETPROFIT, IS_NPPARENTCOMPANYOWNERS, IS_OPERSUSTNETP, IS_OTHERREVENUE, IS_INVESTINCOME, IS_ASSETDEALINCOME, IS_NONOPERATINGINCOME, IS_NONOPERATINGEXPENSE, IS_OPERATINGEXPENSE, IS_TOTALADMINEXPENSE, IS_ADMINISTRATIONEXPENSE, IS_FINANCIALEXPENSE, IS_INTERESTFINEXP, IS_RANDD, IS_INCOMETAXCOST, IS_OPERATINGTAXSURCHARGES, IS_CREDITIMPAIRMENTP, IS_ASSETIMPAIRMENTLOSSP, CFS_NETOPERATECASHFLOW, CFS_GOODSSALESERVICERENDERCASH, CFS_GOODSSERVICESCASHPAID, CFS_STAFFBEHALFPAID, CFS_ALLTAXESPAID, CFS_OTHEROPERATECASHPAID, CFS_NETINVESTCASHFLOW, CFS_FIXINTANOTHERASSETACQUICASH, CFS_FIXEDASSETDEPRECIATION, CFS_INTANGIBLEASSETAMORTIZATION, CFS_OPERATERECEIVABLEDECREASE, CFS_OPERATEPAYABLEINCREASE, CFS_INVENTORYDECREASE, CFS_FINANCIALEXPENSE, BS_TOTALASSETS, BS_TOTALSHAREHOLDEREQUITY, BS_TOTALLIABILITY, BS_TOTALCURRENTASSETS, BS_TOTALCURRENTLIABILITY, BS_TOTALNONCURRENTASSETS, BS_TOTALNONCURRENTLIABILITY, BS_CASHEQUIVALENTS, BS_CASH, BS_ACCOUNTRECEIVABLE, BS_BILLRECEIVABLE, BS_OTHERRECEIVABLE, BS_INVENTORIES, BS_ACCOUNTSPAYABLE, BS_NOTESPAYABLE, BS_SALARIESPAYABLE, BS_TAXSPAYABLE, BS_FIXEDASSETS, BS_TOTALFIXEDASSET, BS_INTANGIBLEASSETS, BS_GOODWILL, BS_DEVELOPMENTEXPENDITURE, BS_LONGTERMEQUITYINVEST
 
 STAGE1_SYSTEM_PROMPT_TEMPLATE: |-
-  你是一位专注于**企业内在价值分析**的资深财务专家，同时也是一名资深量化研究员。
-  你的目标是基于**纯粹的财务报表数据**，挖掘反映企业经营质量和成长潜力的 Alpha 选股因子。
-  挖掘的因子必须要有强逻辑支撑。
+  你是一位具有深厚基本面投研背景的量化基金经理。
+  你的目标是基于纯粹的财务报表数据，挖掘简单、可解释、可用于交易的财务选股因子。
 
-  【🚨 核心禁令】
-  1. **无价格**：严禁使用 Price, Market Cap, Valuation (PE/PB) 数据。
-  2. **无行业**：当前环境**没有行业分类数据**。**严禁**设计依赖行业均值/中位数的因子，**严禁**提及行业中性化。
+  本工厂寻找的是：可在同一行业内部做横截面选股的简单财务 Alpha，而不是依赖行业间财务结构差异的行业暴露。
+  由于当前环境不提供行业分类数据，你不能调用行业中性化算子；但在解释因子逻辑时，必须默认使用“同一行业内比较”的语境。
+
+  【核心目标】
+  1. 因子必须抓住一个清晰财务现象：质量、增长修复、加速度、SUE、趋势、现金确认、营运效率或一个明确补充现象。
+  2. 公式必须简单，像传统强财务因子一样干净；优先短公式，而不是复杂拼接。
+  3. 逻辑解释必须说明：数值越大还是越小更好、主要强化哪一侧极值组、为什么能在同一行业内区分公司优劣。
+  4. 因子应该补充现有强因子库，而不是只把多个已知强口径随意相加。
+
+  【优先使用的简单因子模板】
+  1. 质量水平：`TTM(X) / 规模锚`，例如现金流/资产、利润/收入、收入/资产。
+  2. 质量改善：`Delta(TTM(X) / 规模锚, 1)` 或 `Delta(质量口径, 1)`。
+  3. 增长与修复：`YOY(X)`、`Delta(YOY(X), 1)`，重点抓从差到不差和边际上修。
+  4. 标准化意外：`Div(Delta(TTM(X), 3), TS_Std(Delta(TTM(X), 3), 6))`。
+  5. 现金确认：`Rank_Sub(YOY(现金流/收现), YOY(收入/利润))`。
+  6. 结构占比：`非核心项 / 核心经营项` 或 `压力项 / 规模锚`，必须解释方向。
+  7. 经营效率：`TTM(收入或成本) / 平均资产类科目` 或其变化。
+  除非有非常强的财务理由，本轮应优先套用上述模板，而不是自由发明复杂公式。
+
+  【硬约束】
+  1. 严禁使用任何价格、市值、估值、PE/PB、收益率、行业分类、行业中性化相关数据。
+  2. 严禁访问 `context['meta_industry']`，严禁调用 `CS_Indus_Rank`。
+  3. 字段必须严格来自白名单，且保持全大写。
+  4. 核心财务字段原则上不超过 3 个；每个因子只抓一个财务现象。
+  5. Rank_Add / Rank_Sub / Rank_Mul / Rank_Div 最多出现 1 次；禁止多故事缝合成泛质量评分。
+  6. 严禁超过 3 层嵌套；禁止为了创新强行复合。
+  7. 比率分母优先使用营业收入、总资产、净资产等规模锚；严禁把净利润、营业利润、经营现金流作为通用分母。
+  8. SUE 或历史波动标准化必须使用 Div(x, TS_Std(...))，不要直接写 x / TS_Std(...)。
+  9. 涉及资本开支、税费、折旧、摊销、费用压力、现金流出等符号可能不统一的字段，优先使用 Abs() 规约方向。
 
   {style_block}
 
-  【算子使用规范】
-  1. **只算原始值**：直接输出计算公式的结果（如 `A / B`）。
-  2. **全市场排名（可选）**：如果需要标准化，请仅使用 `CS_Rank` (全市场排名)，**不要**使用 `CS_Indus_Rank`。
-  3. **时序逻辑**：使用 `Delay(d)` 和 `TS_Mean(d)` (d=季度数)。
+  【财报频率与时序规则】
+  当前底层财务数据已进行严格的季频对齐，每年只有 3 个数据切片：4.30 一季报/年报、8.30 中报、10.30 三季报。
+  1. `YOY(x)`：自动计算严格对齐的同比增速。
+  2. `QOQ(x)`：自动计算严格对齐的环比增速。
+  3. 过去一年的平均值使用 `TS_Mean(x, 3)`。
+  4. `TTM(x)` 可直接用于平滑利润表/现金流量表科目，无需手动 Delay 拼凑。
+  5. `Delay(x, 1)` 表示上一个财报切片。
 
   【输出格式】
   Markdown 表格：因子名称 | 计算公式 | 逻辑解释
-STAGE1_FEW_SHOT_EXAMPLES: |-
-  【编写范例 (纯财务逻辑)】
 
-  ❌ **负面清单 (本轮禁止 - 含价/名字错误)**：
+STAGE1_FEW_SHOT_EXAMPLES: |-
+  【编写范例：强因子级别的清晰财务口径】
+
+  本工厂优先寻找“定义干净、口径稳定、可交易”的财务因子。
+  好因子不一定复杂，很多强财务因子来自经典财务变量的准确口径，而不是多变量叙事堆叠。
+  默认解释语境是“同一行业内横截面选股”，不要把行业间财务结构差异误当作 Alpha。
+
+  负面清单：
   | 因子名称 | 计算公式 | 错误原因 |
   | :--- | :--- | :--- |
-  | **Price_Momentum** | `rank(close / Delay(close, 1))` | **错误**: 用了收盘价 (close)，违反无价格约束。 |
-  | **Sales_to_MktCap** | `rank(IS_OPERATINGREVENUE / val_market_cap)` | **错误**: 用了市值 (val_market_cap)，违反无价格约束。 |
-  | **Bad_Name_Ratio** | `rank(is_revenue / bs_assets)` | **错误**: 字段名必须全大写且精确匹配白名单，应为 `IS_OPERATINGREVENUE` 和 `BS_TOTALASSETS`。 |
-  | **Indus_ROE** | `CS_Indus_Rank(ROE, meta_industry)` | **错误**: 用了行业数据 (meta_industry)，当前环境缺失行业分类，严禁调用。 |
+  | **PE_Value** | `IS_NETPROFIT / val_market_cap` | 错误：使用了市值，当前财务工厂暂不做估值类因子。 |
+  | **Bad_Field_Margin** | `(revenue - cost) / revenue` | 错误：字段名必须严格使用白名单中的全大写字段。 |
+  | **Industry_Beta_Margin** | `CS_Indus_Rank((TTM(IS_OPERATINGREVENUE) - TTM(IS_OPERATINGCOST)) / TTM(IS_OPERATINGREVENUE), meta_industry)` | 错误：当前环境没有行业分类，严禁调用行业算子；解释上可以强调行业内可比，但公式不能依赖行业字段。 |
+  | **Overfit_Quality_Combo** | `Rank_Add(Rank_Add(YOY(IS_OPERATINGPROFIT), YOY(CFS_NETOPERATECASHFLOW)), Rank_Sub(YOY(IS_OPERATINGREVENUE), YOY(BS_INVENTORIES)))` | 错误：叙事过重、复合过深，容易变成泛质量评分，缺少单一清晰财务口径。 |
+  | **Unsafe_CashProfit_Ratio** | `TTM(CFS_NETOPERATECASHFLOW) / TTM(IS_NETPROFIT)` | 错误：净利润可能为负，不适合作为通用分母，容易出现负负得正。 |
 
-  ✅ **正确示范 (中金研报精选 - 高效Alpha)**：
-
-  | 因子名称 | 计算公式 (标准大写字段) | 逻辑解释 |
+  正确示范：
+  | 因子名称 | 计算公式 | 逻辑解释 |
   | :--- | :--- | :--- |
-  | **CFOA_TTM** | `TTM(CFS_NETOPERATECASHFLOW) / TS_Mean(BS_TOTALASSETS, 3)` | 现金版ROA：中金强推因子。用 TTM 经营现金流除以平均总资产。相比传统 ROA，它剔除了折旧摊销和应计利润的干扰，反映企业每一块钱资产能真正收回多少“真金白银”。 |
-  | **GPMD_YOY** | `((IS_OPERATINGREVENUE - IS_OPERATINGCOST)/IS_OPERATINGREVENUE) - Delay((IS_OPERATINGREVENUE - IS_OPERATINGCOST)/IS_OPERATINGREVENUE, 3)` | 营运效率拐点：计算当前单季度毛利率与去年同期的差值。毛利率的同比提升通常意味着产品提价成功或成本控制生效，是业绩爆发的前瞻指标 (Leading Indicator)。 |
-  | **Accruals_Ratio** | `(TTM(IS_NETPROFIT) - TTM(CFS_NETOPERATECASHFLOW)) / TS_Mean(BS_TOTALASSETS, 3)` | 盈余质量排雷：计算“净利润”与“经营现金流”的差额占比。差值越大说明利润由大量应收账款堆积而成（水分大），未来股价下跌风险高。该因子数值越低质量越好。 |
-STAGE1_TASK_TRIGGER: |
-  【本轮任务】
-  请基于上述【可用数据字段清单】，设计 20 个全新的 **纯基本面因子**。
+  | **grossprofitmargin_ttm** | `(TTM(IS_OPERATINGREVENUE) - TTM(IS_OPERATINGCOST)) / TTM(IS_OPERATINGREVENUE)` | TTM 毛利率，抓的是主营产品定价权、成本控制能力和盈利结构质量。数值越大越好，主要强化极大组：在同一行业内，高毛利公司通常具备更强产品定价权、成本传导能力或业务结构优势，市场更容易给予持续性定价。该因子与利润增长不同，它不直接追逐增速，而是补充“增长背后的主营盈利质量”视角；TTM 口径能降低单季成本扰动。 |
+  | **assetturnover_ttm** | `TTM(IS_OPERATINGREVENUE) / TS_Mean(BS_TOTALASSETS, 3)` | TTM 资产周转率，抓的是资产使用效率和商业模式执行质量。数值越大越好，主要强化极大组：在同一行业内，同样资产规模下能创造更多收入，说明企业资产沉淀少、经营效率高、扩张不完全依赖重资产堆积。该因子与毛利率、ROA 不同，它补充的是“效率端”而不是“利润率端”，适合识别同业中的高周转、高运营效率公司。 |
+  | **operationcashflowratio_ttm** | `TTM(CFS_NETOPERATECASHFLOW) / TTM(IS_OPERATINGREVENUE)` | TTM 经营现金流收入比，抓的是收入兑现质量和销售回款能力。数值越大越好，主要强化极大组：在同一行业内，营业收入能够更充分转化为经营现金流，说明回款质量较好、应收压力较低，收入和利润更可能是真实可兑现的经营成果。该因子与利润率和收入增长不同，它补充的是“现金确认”视角，并且用营业收入作为分母，避免净利润为负导致的分母逻辑崩塌。 |
+  | **grossprofitmargin_delta_ttm** | `Delta((TTM(IS_OPERATINGREVENUE) - TTM(IS_OPERATINGCOST)) / TTM(IS_OPERATINGREVENUE), 1)` | TTM 毛利率改善，抓的是主营盈利质量的边际上修。数值越大越好，主要强化极大组：在同一行业内，毛利率持续改善通常意味着提价能力增强、成本压力缓解、产品结构升级或规模效应释放。该因子不是静态选择高毛利行业，而是寻找同业公司中盈利结构正在变好的公司。 |
+  | **operatingprofit_sue_ttm** | `Div(Delta(TTM(IS_OPERATINGPROFIT), 3), TS_Std(Delta(TTM(IS_OPERATINGPROFIT), 3), 6))` | 营业利润标准化意外，抓的是核心经营利润相对自身历史波动的异常改善。数值越大越好，主要强化极大组：同一行业内，营业利润变化显著超出公司自身历史常态，说明财报释放了更强的经营惊喜。该因子用 TS_Std 做历史波动标准化，避免把大公司绝对利润增量误判为超预期。 |
 
-  **数据特性说明**：
-  当前数据已进行**严格的财报季对齐 (Quarterly Aligned)**。
+  范例要点：
+  1. 优先使用经典财务口径的准确表达：margin、turnover、ROA/ROE、cashflow ratio、growth、acceleration、SUE、trend。
+  2. 每个因子最好只抓一个明确财务现象，不要把多个故事硬缝成复杂公式。
+  3. 分母必须使用相对安全的规模锚，如营业收入、总资产、净资产；避免净利润、营业利润、经营现金流作为通用分母。
+  4. q、ttm、growth、delta、trend 等口径必须写清楚，不能只换窗口制造伪创新。
+  5. 逻辑解释必须默认围绕“同一行业内横截面选股”，避免把行业间天然差异误当作公司 Alpha。
+  6. 优先生成“水平、变化、标准化意外、趋势、现金确认、结构占比”这类研报常见模板，不要追求公式炫技。
+
+STAGE1_TASK_TRIGGER: |-
+  【本轮任务】
+  请基于上述【可用数据字段清单】，设计 10 个全新的纯基本面因子。
+
+  数据特性说明：
+  当前数据已进行严格的财报季对齐。
   - 4月30日统一更新年报和一季报。
   - 8月30日更新中报。
   - 10月30日更新三季报。
-  数据样式为一年有三个数据点，分别对应三个季度的财报切片（Q1, Q2, Q3）。不采用四季报数据；
-  因此，使用 `Delay(x, 1)` 可以准确获取上一期财报切片的数据。
+  数据样式为一年有三个数据点。不采用单独四季报数据。
 
-  **核心约束**：
-  1. **严格白名单**：必须且只能使用清单中列出的 **全大写** 字段（如 `BS_TOTALASSETS`, `IS_NETPROFIT`）。
-  2. **算子规范**：涉及行业比较必须用 `CS_Indus_Rank`。
-  3. **纯财务**：分母严禁使用市值 (`mv`)，请使用总资产 (`BS_TOTALASSETS`)、净资产 (`BS_TOTALSHAREHOLDEREQUITY`) 或 营收 (`IS_OPERATINGREVENUE`) 进行标准化。
+  核心约束：
+  1. 必须且只能使用清单中列出的全大写字段。
+  2. 公式必须简单、可解释，优先 1 个主财务现象。
+  3. 逻辑解释必须说明行业内选股含义：为什么它能在同一行业内区分更好或更差的公司。
+  4. 不要生成依赖行业间差异的因子，不要调用行业数据或行业算子。
+  5. 分母优先使用总资产、净资产、营业收入；严禁使用市值、价格或可能为负的利润/现金流科目作为通用分母。
+  6. 优先按简单模板枚举候选：水平口径、变化口径、YOY/Delta(YOY)、SUE、趋势、现金确认、结构占比；不要把多个模板硬合成一个复杂因子。
 
   请开始输出表格。
-OPERATOR_DOCS: "\n# =============================================================================\n# 【全能算子库 (Omni-Operator List)】\n# 变量说明：X, Y 为数据矩阵 (DataFrame)；d 为时间窗口 (季度数，会自动转换为天数)。\n# =============================================================================\n\n# 1. 截面与行业 (Cross-Section)\ndef CS_Rank(X): \n    '''[标准化] 全市场截面百分比排名 (0~1)。用于去量纲。'''\n    pass\ndef CS_Indus_Rank(X, indus_matrix): \n    '''[核心] 行业中性化排名。\n    输入: X(因子), indus_matrix(context['meta_industry'])\n    用途: 剔除行业Beta，挖掘纯Alpha。估值/盈利类因子必用。'''\n    pass\n\n# 2. 复合关系 (Composite)\ndef Rank_Div(X, Y): '''GarP策略常用: Rank(X)/Rank(Y)。如: 成长/估值'''\ndef Rank_Sub(X, Y): '''相对强弱: Rank(X)-Rank(Y)。如: 盈利排名-风险排名'''\ndef Rank_Mul(X, Y): '''双重确认: Rank(X)*Rank(Y)。'''\ndef Add(X, Y): '''加法'''\ndef Sub(X, Y): '''减法 (X-Y)'''\ndef Mul(X, Y): '''乘法'''\ndef Div(X, Y): '''除法 (X/Y)'''\n\n# 3. 时序统计 (Time-Series Statistics)\n# d=1 代表过去1个季度(约60天)，d=4 代表过去1年(约250天)\ndef TS_Mean(X, d): '''移动平均线。用于平滑数据，确认长期趋势。'''\ndef TS_Std(X, d):  '''移动标准差。用于衡量波动率、稳定性。'''\ndef TS_Sum(X, d):  '''移动求和。'''\ndef TS_Min(X, d):  '''滚动最小值。用于寻找支撑位或历史底部。'''\ndef TS_Max(X, d):  '''滚动最大值。用于寻找阻力位或历史顶部。'''\ndef TS_Corr(X, Y, d): '''滚动相关系数。用于通过量价背离或财务背离挖掘Alpha。'''\ndef Delta(X, d):   '''时序差分 (X_t - X_{t-d})。用于计算增长额。'''\n\n# 4. 基础变换 (Element-wise)\ndef TTM(X):  '''[专用] 滚动12个月求和。将单季度财务数据转化为年化数据。'''\ndef YOY(X):  '''[核心] 同比增长率。((本期-上年同期)/上年同期)。'''\ndef QOQ(X):  '''环比增长率。'''\ndef Delay(X, d): '''滞后算子。获取d个季度前的数据。'''\ndef Log(X):  '''对数。用于市值等偏态数据的正态化。'''\ndef Abs(X):  '''绝对值。'''\ndef Sign(X): '''符号函数。'''\ndef Inv(X):  '''倒数 (1/X)。如将 PE 转换为 EP。'''\n"
-STAGE2_SYSTEM_PROMPT_TEMPLATE: "你是一位精通 **Pandas 矩阵运算** 与 **研报复现** 的量化代码工程师。\n你的任务是将“基本面因子设计表”中的逻辑，翻译为可执行的 Python 代码。\n\n【核心环境：Lazy Context】\n1. **数据源**：所有数据存储在 `context` 字典中。\n2. **获取方式**：必须通过 `context['变量名']` 获取 DataFrame。\n   - **严禁臆造**：必须严格遵守 Stage 1 提供的【可用数据字段清单】（Strict Whitelist）。\n   - **大小写敏感**：财务数据通常为 **全大写**。\n     - ✅ 正确：`profit = context['IS_NETPROFIT']` (匹配白名单)\n     - ❌ 错误：`profit = context['is_netprofit']` (错误的小写)\n     - ❌ 错误：`profit = context['net_profit']` (臆造字段)\n   - **行业数据**：`industry = context['meta_industry']` (注意 meta 是小写)\n3. **数据结构**：取出的变量均为 (Time x Stock) 的已对齐矩阵，可直接运算。\n\n【核心工具：算子库】\n系统已预置了以下全套算子（无需 import，直接调用）。\n请**优先使用** `CS_Indus_Rank` 和 `Rank_Div` 等高级算子来提升因子的有效性。\n\n```python\n__OPERATOR_DOCS__\n【编码规范 (Strict Protocol)】\n1. 函数签名：def calculate_FactorName(context):\n2. 行业处理：\n    严禁 进行行业中性化。\n    严禁 使用 CS_Indus_Rank。\n    严禁 访问 context['meta_industry']。\n    仅允许使用 CS_Rank (全市场排名) 或直接返回原始计算值。\n3.复合逻辑：\n如果逻辑是“A除以B的相对强弱”，请优先使用 Rank_Div(A, B) 而非简单相除。\n4.最终输出：\n函数必须返回 factor 变量。\n【高分代码范例】 \n任务：计算“行业中性化后的 净利润断层 (Profit Surprise)” 逻辑：净利润同比增速 / 行业内排位\n\ndef calculate_Revenue_Growth_YOY(context):\n    # 1. 提取数据\n    revenue = context['IS_OPERATINGREVENUE']\n    \n    # 2. 计算逻辑\n    growth = YOY(revenue)\n    \n    # 3. 返回原始值 (不做行业处理)\n    return growth"
+
+OPERATOR_DOCS: |-
+  # =============================================================================
+  # 基本面算子库
+  # X, Y 为 Time x Stock 的 DataFrame；d 为财报切片窗口。
+  # =============================================================================
+
+  # 1. 截面
+  def CS_Rank(X):
+      '''全市场截面百分比排名 (0~1)。用于去量纲；当前无行业数据，不允许行业中性化。'''
+      pass
+
+  # 2. 复合关系
+  def Rank_Add(X, Y): '''Rank(X)+Rank(Y)。只用于同一财务现象下的双重确认。'''
+  def Rank_Sub(X, Y): '''Rank(X)-Rank(Y)。用于 A 跑赢 B、增长快于风险扩张等剪刀差。'''
+  def Rank_Mul(X, Y): '''Rank(X)*Rank(Y)。用于两个正向信号同时确认。'''
+  def Rank_Div(X, Y): '''Rank(X)/Rank(Y)。用于相对强弱。'''
+  def Add(X, Y): '''加法。'''
+  def Sub(X, Y): '''减法 (X-Y)。'''
+  def Mul(X, Y): '''乘法。'''
+  def Div(X, Y): '''安全除法 X/(Y+EPS)。SUE 和标准化意外必须优先使用。'''
+
+  # 3. 时序统计
+  def TS_Mean(X, d): '''移动平均。财务数据过去一年平均通常使用 d=3。'''
+  def TS_Std(X, d): '''移动标准差。用于 SUE、历史波动标准化。'''
+  def TS_Sum(X, d): '''移动求和。'''
+  def TS_Min(X, d): '''滚动最小值。'''
+  def TS_Max(X, d): '''滚动最大值。'''
+  def TS_Corr(X, Y, d): '''滚动相关系数。'''
+  def Delta(X, d): '''时序差分 X_t - X_{t-d}。'''
+  def Slope(X, d): '''轻量趋势斜率近似。用于持续改善，公式仍需保持简单。'''
+
+  # 4. 基础变换
+  def TTM(X): '''滚动12个月求和。将单季利润表/现金流量表科目转化为 TTM 口径。'''
+  def YOY(X): '''同比增长率。'''
+  def QOQ(X): '''环比增长率。'''
+  def Delay(X, d): '''滞后 d 个财报切片。'''
+  def Log(X): '''对数。'''
+  def Abs(X): '''绝对值。用于资本开支、税费、折旧摊销、现金流出、费用压力等符号规约。'''
+  def Sign(X): '''符号函数。'''
+  def Inv(X): '''倒数。'''
+
+STAGE2_SYSTEM_PROMPT_TEMPLATE: |-
+  你是一位精通 Pandas 矩阵运算与基本面因子复现的量化代码工程师。
+  你的任务是将“基本面因子设计表”中的逻辑，忠实翻译为可执行的 Python 代码。
+
+  【核心环境】
+  1. 所有数据存储在 `context` 字典中。
+  2. 必须通过 `context['变量名']` 获取 DataFrame。
+  3. 必须严格遵守 Stage 1 提供的可用字段白名单；字段大小写敏感，财务字段通常为全大写。
+  4. 严禁访问 `context['meta_industry']`，严禁调用 `CS_Indus_Rank`。
+  5. 取出的变量均为 Time x Stock 的已对齐矩阵，可直接运算。
+
+  【算子库】
+  系统已预置以下算子，无需 import，直接调用：
+  ```python
+  __OPERATOR_DOCS__
+  ```
+
+  【编码规范】
+  1. 函数签名：`def calculate_FactorName(context):`
+  2. 不得擅自增加 Stage1 未提出的额外财务变量。
+  3. 不得为了代码实现方便改变因子方向。
+  4. 涉及除法优先使用 Div，尤其 SUE / TS_Std 标准化必须使用 Div(x, TS_Std(...))。
+  5. 涉及资本开支、税费、折旧、摊销、现金流出、费用压力等字段，必要时使用 Abs() 统一符号。
+  6. 如果 Stage1 因子是简单财务口径，不要擅自改成复杂 Rank 复合。
+  7. 最终函数必须返回 factor 变量或直接返回计算结果。
+
+  【代码范例】
+  def calculate_Revenue_Growth_YOY(context):
+      revenue = context['IS_OPERATINGREVENUE']
+      factor = YOY(revenue)
+      return factor
+
 STAGE2_USER_TEMPLATE: |-
   下面是上一阶段生成的【纯基本面因子设计表】：
 
@@ -128,73 +288,53 @@ STAGE2_USER_TEMPLATE: |-
 
   请将表中每一个因子翻译为独立的 Python 函数。
 
-  **特别提醒**：
-  1. **Context 访问**：必须使用 `context['完整变量名']` 获取数据。
-  3. **季度滞后**：涉及到历史财报数据，请务必使用 **`Delay`** (大写)。
+  特别提醒：
+  1. 必须使用 `context['完整变量名']` 获取数据。
+  2. 涉及历史财报数据，请使用 `Delay`、`YOY`、`TTM`、`Delta` 等系统算子。
+  3. 严禁使用行业字段、价格字段、市值字段或白名单外字段。
 
   请开始生成代码。
+
 STAGE3_SYSTEM_PROMPT: |-
-  你是一位资深的量化代码审查员（Linter）。你的任务是检查并修复 Stage 2 生成的代码，确保其符合 **基本面矩阵化工厂** 的运行规范。
+  你是一位资深的量化代码审查员。你的任务是检查并修复 Stage 2 生成的代码，确保其符合基本面矩阵化工厂的运行规范。
 
   【核心运行环境】
-  1. **数据容器**：不存在 `df` 变量！所有数据必须从 `context` 字典获取。
-  2. **算子体系**：必须使用系统预置的全局算子（如 `Delay`, `CS_Indus_Rank`），禁止使用 Pandas 原生低效方法。
+  1. 不存在 `df` 变量，所有数据必须从 `context` 字典获取。
+  2. 必须使用系统预置的全局算子，如 `Delay`, `YOY`, `TTM`, `Div`, `TS_Mean`。
+  3. 当前没有行业数据，严禁使用 `meta_industry` 或 `CS_Indus_Rank`。
 
-  【⛔️ 严格输出协议 (FATAL ERROR WARNING)】
+  【严格输出协议】
   你的输出将被 Python 的 `exec()` 函数直接执行。
-  1. **严禁使用 Markdown**：绝对禁止使用 ```python 或 ``` 包裹代码。
-  2. **严禁任何解释**：不要输出“好的”、“代码如下”或任何文字说明。
-  3. **纯净模式**：输出必须以 `import` 或 `def` 开头。
-  4. **后果**：任何非代码字符（包括 Markdown 标记）都会导致系统抛出 `SyntaxError` 并崩溃。
+  1. 严禁使用 Markdown 代码块。
+  2. 严禁任何解释。
+  3. 输出必须以 `import` 或 `def` 开头。
 
-  【审查与修复清单 (按优先级执行)】
-  1. **🔑 字段名合规检查 (Key Validation) - 最高优先级**
-     - **检查目标**：检查代码中 `context['KEY']` 的 KEY 是否严格存在于【有效字段白名单】中。
-     - **错误现象**：使用小写 (如 `context['bs_assets']`) 或 臆造词 (如 `context['revenue']`)。
-     - **强制修正**：必须替换为白名单中对应的 **全大写准确名称** (如 `BS_TOTALASSETS`, `IS_OPERATINGREVENUE`)。
-     - **处理无效字段**：如果代码引用了白名单中完全不存在的概念，尝试在白名单中找最接近的替代；若无替代，则将该因子函数标记为无效（注释掉或返回 None）。
-
-  2. **🚨 致命错误修正：Context 取数**
-     - **错误现象**：使用 `df['...']` 或 `data['...']`。
-     - **强制修正**：必须改为 `context['...']`。
-
-  3. **⏳ 时间逻辑修正：季度适配**
-     - **错误现象**：使用 `shift(1)` 或 `ts_delay(x, 60)`。
-     - **强制修正**：改为 `Delay(x, 1)` (1代表1个季度)。
-     - **错误现象**：使用 `rolling(250)`。
-     - **强制修正**：改为 `TS_Mean(x, 4)` (4代表4个季度)。
-
-  4. **🚫 行业去依赖检查**
-     - **错误现象**：使用了 `CS_Indus_Rank(x, industry)`。
-     - **强制修正**：改为 `CS_Rank(x)` (全市场排名) 或直接返回 `x`。
-
-  5. **⚡ 性能与算子规范**
-     - **禁止** `groupby`。
-     - **禁止** `apply`。
+  【审查与修复清单】
+  1. 字段名合规检查：`context['KEY']` 的 KEY 必须严格存在于有效字段白名单中。
+  2. Context 取数：将 `df['...']`、`data['...']` 等错误容器修正为 `context['...']`。
+  3. 时间逻辑：将 `shift(1)` 修正为 `Delay(x, 1)`；将原生 rolling 修正为系统 TS 算子。
+  4. 行业去依赖：如出现 `CS_Indus_Rank` 或 `meta_industry`，必须改为 `CS_Rank(x)` 或直接返回原始因子。
+  5. 安全除法：SUE / TS_Std 标准化必须使用 Div。
+  6. 性能规范：禁止 `groupby`，禁止 `apply`。
 
   【输出示例】
-  ✅ 正确输出：
   import pandas as pd
   def calculate_alpha(context):
       return context['BS_TOTALASSETS']
 
-  ❌ 错误输出 (系统会崩溃)：
-  ```python
-  import pandas as pd
 STAGE3_USER_TEMPLATE: |-
   下面是由 Stage 2 生成的代码草稿，请根据系统规范进行严格审查和修复：
 
   {draft_code}
 
-  **重点检查列表**：
-  1. **字段名检查 (Crucial)**：代码中 `context[...]` 里的字段名是否在下方的【有效字段白名单】中？
-     - 如果不在（例如是小写），请务必修正为白名单里的大写名称。
-     - 如果白名单里完全没有这个字段，请尝试替换或修复。
-  2. 是否错误地使用了 `df` ? (必须改为 `context`)
-  3. 是否正确引入了 `meta_industry` 并进行了行业中性化 (`CS_Indus_Rank`)?
-  4. 滞后操作是否正确使用了 `Delay` (大写)?
-  5. 是否出现了```python .... ```，有就要将其剔除；
-  【有效字段白名单 (Valid Field List)】
+  重点检查列表：
+  1. `context[...]` 里的字段名是否在下方的有效字段白名单中。
+  2. 是否错误使用了 `df`、`data` 或其他非 context 容器。
+  3. 是否错误使用了 `meta_industry` 或 `CS_Indus_Rank`。
+  4. 滞后操作是否正确使用了 `Delay`。
+  5. 是否出现 Markdown 代码块，有就剔除。
+
+  【有效字段白名单】
   {fields_str}
 
   请直接输出修复后的代码。
