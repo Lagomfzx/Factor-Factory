@@ -236,8 +236,13 @@ OPERATOR_DOCS: |-
   def TS_Min(X, d): '''滚动最小值。'''
   def TS_Max(X, d): '''滚动最大值。'''
   def TS_Corr(X, Y, d): '''滚动相关系数。'''
+  def TS_Rank(X, d): '''当前值在过去 d 个财报切片中的时序分位排名 (0~1)，用于历史高低位置。'''
+  def TS_ZScore(X, d): '''当前值相对过去 d 个财报切片均值和波动的标准化偏离。'''
+  def TS_RegressionSlope(X, d): '''过去 d 个财报切片的滚动线性回归斜率，用于真实趋势斜率。'''
+  def TS_RegressionResidual(X, d): '''当前值相对过去 d 个财报切片线性趋势外推值的残差，用于趋势外超预期。'''
+  def TS_Surprise(X, change_d, vol_d): '''财报超预期封装：Delta(TTM(X), change_d) / TS_Std(Delta(TTM(X), change_d), vol_d)。'''
   def Delta(X, d): '''时序差分 X_t - X_{t-d}。'''
-  def Slope(X, d): '''轻量趋势斜率近似。用于持续改善，公式仍需保持简单。'''
+  def Slope(X, d): '''TS_RegressionSlope 的别名，过去 d 个财报切片的滚动线性回归斜率。'''
 
   # 4. 基础变换
   def TTM(X): '''滚动12个月求和。将单季利润表/现金流量表科目转化为 TTM 口径。'''

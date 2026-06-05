@@ -1,0 +1,4900 @@
+{
+  "version": "fundamental_single_metric_field_cards_v1",
+  "description": "One persistent field card per financial account for single-metric factor generation.",
+  "cards": [
+    {
+      "field": "BS_ACCOUNTRECEIVABLE",
+      "statement": "资产负债表",
+      "role": "经营资产/营运资本占用类",
+      "role_hint": "关注资产占用、回款压力、库存压力、异常扩张或释放。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "核心经营资产，适合回款质量和营运资本分析。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_Rank(X, 6)",
+        "TS_ZScore(X, 6)",
+        "TS_Drawdown(X, 6)",
+        "TS_PastHighGap(X, 6)",
+        "TS_RegressionResidual(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "BS_ACCOUNTSPAYABLE",
+      "statement": "资产负债表",
+      "role": "负债压力/经营性负债类",
+      "role_hint": "关注杠杆压力、偿债压力、供应链融资、预收支撑或负债收缩。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "核心经营负债，适合付款周期和营运资本分析。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_Rank(X, 6)",
+        "TS_ZScore(X, 6)",
+        "Slope(X, 3)",
+        "TS_Drawdown(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "BS_ADVANCEPAYMENT",
+      "statement": "资产负债表",
+      "role": "经营资产/营运资本占用类",
+      "role_hint": "关注资产占用、回款压力、库存压力、异常扩张或释放。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "预付款项，适合采购前置和资金占用分析。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_Rank(X, 6)",
+        "TS_ZScore(X, 6)",
+        "TS_Drawdown(X, 6)",
+        "TS_PastHighGap(X, 6)",
+        "TS_RegressionResidual(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "BS_ADVANCERECEIPTS",
+      "statement": "资产负债表",
+      "role": "经营性负债/订单前置类",
+      "role_hint": "关注预收支撑、订单前置、收入确认节奏和需求景气变化。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "预收款项属于旧准则口径，应视作与合同负债同一家族字段。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_Rank(X, 6)",
+        "TS_ZScore(X, 6)",
+        "Slope(X, 3)",
+        "TS_Drawdown(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "BS_AMONGOTHEQUINSTRUMENT",
+      "statement": "资产负债表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "BS_AMONGTRADINGASSETS",
+      "statement": "资产负债表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "其中：交易性金融资产，谨慎使用，避免与经营资产混合。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "BS_AMONGTRADINGLIABILITY",
+      "statement": "资产负债表",
+      "role": "负债压力/经营性负债类",
+      "role_hint": "关注杠杆压力、偿债压力、供应链融资、预收支撑或负债收缩。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "其中：交易性金融负债，更适合作为金融结构修正项。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_Rank(X, 6)",
+        "TS_ZScore(X, 6)",
+        "Slope(X, 3)",
+        "TS_Drawdown(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "BS_BILLACCRECEIVABLE",
+      "statement": "资产负债表",
+      "role": "经营资产/营运资本占用类",
+      "role_hint": "关注资产占用、回款压力、库存压力、异常扩张或释放。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "应收票据及应收账款合并口径，适合广义应收占用分析。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_Rank(X, 6)",
+        "TS_ZScore(X, 6)",
+        "TS_Drawdown(X, 6)",
+        "TS_PastHighGap(X, 6)",
+        "TS_RegressionResidual(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "BS_BILLRECEIVABLE",
+      "statement": "资产负债表",
+      "role": "经营资产/营运资本占用类",
+      "role_hint": "关注资产占用、回款压力、库存压力、异常扩张或释放。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_Rank(X, 6)",
+        "TS_ZScore(X, 6)",
+        "TS_Drawdown(X, 6)",
+        "TS_PastHighGap(X, 6)",
+        "TS_RegressionResidual(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "BS_BONDSPAYABLE",
+      "statement": "资产负债表",
+      "role": "负债压力/经营性负债类",
+      "role_hint": "关注杠杆压力、偿债压力、供应链融资、预收支撑或负债收缩。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_Rank(X, 6)",
+        "TS_ZScore(X, 6)",
+        "Slope(X, 3)",
+        "TS_Drawdown(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "BS_CAPITALRESERVEFUND",
+      "statement": "资产负债表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "资本公积属于权益结构字段，通常次于经营主逻辑。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "BS_CASHEQUIVALENTS",
+      "statement": "资产负债表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "BS_CONSTRUCTIONMATERIALS",
+      "statement": "资产负债表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "note_like"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "BS_CONSTRUINPROCESS",
+      "statement": "资产负债表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "BS_CONTRACTLIABILITY",
+      "statement": "资产负债表",
+      "role": "经营性负债/订单前置类",
+      "role_hint": "关注预收支撑、订单前置、收入确认节奏和需求景气变化。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "合同负债可用于预收和订单前置分析，但行业差异较大。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_Rank(X, 6)",
+        "TS_ZScore(X, 6)",
+        "Slope(X, 3)",
+        "TS_Drawdown(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "BS_CONTRACTUALASSETS",
+      "statement": "资产负债表",
+      "role": "经营资产/营运资本占用类",
+      "role_hint": "关注资产占用、回款压力、库存压力、异常扩张或释放。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "合同资产有用，但和收入确认机制绑定较强，适合谨慎增强。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_Rank(X, 6)",
+        "TS_ZScore(X, 6)",
+        "TS_Drawdown(X, 6)",
+        "TS_PastHighGap(X, 6)",
+        "TS_RegressionResidual(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "BS_DEBTINVESTMENT",
+      "statement": "资产负债表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "BS_DEFERREDTAXASSETS",
+      "statement": "资产负债表",
+      "role": "成本费用/税费类",
+      "role_hint": "关注费用压力、成本压力、异常上升或下降，以及自身历史位置变化。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "TTM(X)",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)",
+        "TS_ConsecutiveGrowth(X, 3)",
+        "Sub(0, YOY(X))"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "BS_DEFERREDTAXLIABILITY",
+      "statement": "资产负债表",
+      "role": "成本费用/税费类",
+      "role_hint": "关注费用压力、成本压力、异常上升或下降，以及自身历史位置变化。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "TTM(X)",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)",
+        "TS_ConsecutiveGrowth(X, 3)",
+        "Sub(0, YOY(X))"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "BS_DERIVATIVEASSETS",
+      "statement": "资产负债表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "BS_DERIVATIVELIABILITY",
+      "statement": "资产负债表",
+      "role": "负债压力/经营性负债类",
+      "role_hint": "关注杠杆压力、偿债压力、供应链融资、预收支撑或负债收缩。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_Rank(X, 6)",
+        "TS_ZScore(X, 6)",
+        "Slope(X, 3)",
+        "TS_Drawdown(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "BS_DEVELOPMENTEXPENDITURE",
+      "statement": "资产负债表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "cautious",
+        "note_like"
+      ],
+      "note": "开发支出适合资本化激进度和质量分析。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "BS_DIVIDENDPAYABLE",
+      "statement": "资产负债表",
+      "role": "负债压力/经营性负债类",
+      "role_hint": "关注杠杆压力、偿债压力、供应链融资、预收支撑或负债收缩。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "应付股利更适合资本分配背景分析。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_Rank(X, 6)",
+        "TS_ZScore(X, 6)",
+        "Slope(X, 3)",
+        "TS_Drawdown(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "BS_DIVIDENDRECEIVABLE",
+      "statement": "资产负债表",
+      "role": "经营资产/营运资本占用类",
+      "role_hint": "关注资产占用、回款压力、库存压力、异常扩张或释放。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "应收股利更适合资本收益背景分析。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_Rank(X, 6)",
+        "TS_ZScore(X, 6)",
+        "TS_Drawdown(X, 6)",
+        "TS_PastHighGap(X, 6)",
+        "TS_RegressionResidual(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "BS_ESTIMATELIABILITY",
+      "statement": "资产负债表",
+      "role": "负债压力/经营性负债类",
+      "role_hint": "关注杠杆压力、偿债压力、供应链融资、预收支撑或负债收缩。",
+      "governance_tags": [
+        "cautious",
+        "note_like"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_Rank(X, 6)",
+        "TS_ZScore(X, 6)",
+        "Slope(X, 3)",
+        "TS_Drawdown(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "BS_FIXEDASSETS",
+      "statement": "资产负债表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "BS_FIXEDASSETSLIQUIDATION",
+      "statement": "资产负债表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "note_like"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "BS_GOODWILL",
+      "statement": "资产负债表",
+      "role": "风险扰动/非核心项目类",
+      "role_hint": "关注异常冲击、质量修正和风险暴露，不宜机械解释为优势。",
+      "governance_tags": [
+        "cautious",
+        "note_like"
+      ],
+      "note": "商誉信息量高但会计敏感，更适合排雷和质量修正。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_RegressionResidual(X, 6)",
+        "TS_PastHighGap(X, 6)",
+        "TS_SignFlip(X, 1)",
+        "Sub(0, TS_ZScore(X, 6))"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "BS_INTANGIBLEASSETS",
+      "statement": "资产负债表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "BS_INTERESTPAYABLE",
+      "statement": "资产负债表",
+      "role": "负债压力/经营性负债类",
+      "role_hint": "关注杠杆压力、偿债压力、供应链融资、预收支撑或负债收缩。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "应付利息适合融资负担分析，但对多数主因子过于细。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_Rank(X, 6)",
+        "TS_ZScore(X, 6)",
+        "Slope(X, 3)",
+        "TS_Drawdown(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "BS_INTERESTRECEIVABLE",
+      "statement": "资产负债表",
+      "role": "经营资产/营运资本占用类",
+      "role_hint": "关注资产占用、回款压力、库存压力、异常扩张或释放。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "应收利息适合金融收益分析，但对多数主因子过于细。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_Rank(X, 6)",
+        "TS_ZScore(X, 6)",
+        "TS_Drawdown(X, 6)",
+        "TS_PastHighGap(X, 6)",
+        "TS_RegressionResidual(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "BS_INVENTORIES",
+      "statement": "资产负债表",
+      "role": "经营资产/营运资本占用类",
+      "role_hint": "关注资产占用、回款压力、库存压力、异常扩张或释放。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "核心经营资产，适合库存压力和周转分析。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_Rank(X, 6)",
+        "TS_ZScore(X, 6)",
+        "TS_Drawdown(X, 6)",
+        "TS_PastHighGap(X, 6)",
+        "TS_RegressionResidual(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "BS_INVESTMENTPROPERTY",
+      "statement": "资产负债表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "投资性房地产适合资产结构分析，但不是通用经营主干。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "BS_LEASELIABILITIES",
+      "statement": "资产负债表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "租赁负债适合租赁负担和融资结构分析。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "BS_LONGDEFERINCOME",
+      "statement": "资产负债表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "note_like"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "BS_LONGDEFERREDEXPENSE",
+      "statement": "资产负债表",
+      "role": "成本费用/税费类",
+      "role_hint": "关注费用压力、成本压力、异常上升或下降，以及自身历史位置变化。",
+      "governance_tags": [
+        "note_like"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "TTM(X)",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)",
+        "TS_ConsecutiveGrowth(X, 3)",
+        "Sub(0, YOY(X))"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "BS_LONGSALARIESPAY",
+      "statement": "资产负债表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "长期应付职工薪酬有用但偏细分，保持谨慎。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "BS_LONGTERMACCOUNTPAYABLE",
+      "statement": "资产负债表",
+      "role": "负债压力/经营性负债类",
+      "role_hint": "关注杠杆压力、偿债压力、供应链融资、预收支撑或负债收缩。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "长期应付款子项，更适合结构分析而非主干表达。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_Rank(X, 6)",
+        "TS_ZScore(X, 6)",
+        "Slope(X, 3)",
+        "TS_Drawdown(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "BS_LONGTERMEQUITYINVEST",
+      "statement": "资产负债表",
+      "role": "规模/权益结构类",
+      "role_hint": "作为目标科目时重点观察自身扩张速度、历史位置或异常变化。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_Rank(X, 6)",
+        "TS_ZScore(X, 6)",
+        "Slope(X, 3)",
+        "TS_PastHighGap(X, 6)",
+        "TS_ConsecutiveGrowth(X, 3)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "BS_LONGTERMLOAN",
+      "statement": "资产负债表",
+      "role": "负债压力/经营性负债类",
+      "role_hint": "关注杠杆压力、偿债压力、供应链融资、预收支撑或负债收缩。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_Rank(X, 6)",
+        "TS_ZScore(X, 6)",
+        "Slope(X, 3)",
+        "TS_Drawdown(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "BS_LONGTERMRECEIVABLEACCOUNT",
+      "statement": "资产负债表",
+      "role": "经营资产/营运资本占用类",
+      "role_hint": "关注资产占用、回款压力、库存压力、异常扩张或释放。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "长期应收款有用，但不是通用经营主干。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_Rank(X, 6)",
+        "TS_ZScore(X, 6)",
+        "TS_Drawdown(X, 6)",
+        "TS_PastHighGap(X, 6)",
+        "TS_RegressionResidual(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "BS_LTACCOUNTPAYABLETOTAL",
+      "statement": "资产负债表",
+      "role": "负债压力/经营性负债类",
+      "role_hint": "关注杠杆压力、偿债压力、供应链融资、预收支撑或负债收缩。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "长期应付款合计更适合作为负债结构背景项。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_Rank(X, 6)",
+        "TS_ZScore(X, 6)",
+        "Slope(X, 3)",
+        "TS_Drawdown(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "BS_MINORITYINTERESTS",
+      "statement": "资产负债表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "BS_NONCURRENTASSETIN1YEAR",
+      "statement": "资产负债表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "note_like"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "BS_NONCURRENTLIABILITYIN1YEAR",
+      "statement": "资产负债表",
+      "role": "负债压力/经营性负债类",
+      "role_hint": "关注杠杆压力、偿债压力、供应链融资、预收支撑或负债收缩。",
+      "governance_tags": [
+        "note_like"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_Rank(X, 6)",
+        "TS_ZScore(X, 6)",
+        "Slope(X, 3)",
+        "TS_Drawdown(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "BS_NOTACCOUNTSPAYABLE",
+      "statement": "资产负债表",
+      "role": "负债压力/经营性负债类",
+      "role_hint": "关注杠杆压力、偿债压力、供应链融资、预收支撑或负债收缩。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "应付票据及应付账款合并口径，是较强的广义供应商融资锚点。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_Rank(X, 6)",
+        "TS_ZScore(X, 6)",
+        "Slope(X, 3)",
+        "TS_Drawdown(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "BS_NOTESPAYABLE",
+      "statement": "资产负债表",
+      "role": "负债压力/经营性负债类",
+      "role_hint": "关注杠杆压力、偿债压力、供应链融资、预收支撑或负债收缩。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "供应商融资子项，适合付款结构分析。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_Rank(X, 6)",
+        "TS_ZScore(X, 6)",
+        "Slope(X, 3)",
+        "TS_Drawdown(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "BS_OTHEQUITYINSTRUMENT",
+      "statement": "资产负债表",
+      "role": "规模/权益结构类",
+      "role_hint": "作为目标科目时重点观察自身扩张速度、历史位置或异常变化。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_Rank(X, 6)",
+        "TS_ZScore(X, 6)",
+        "Slope(X, 3)",
+        "TS_PastHighGap(X, 6)",
+        "TS_ConsecutiveGrowth(X, 3)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "BS_OTHERCOMPOSITEINCOME",
+      "statement": "资产负债表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "BS_OTHERCURRENTASSETS",
+      "statement": "资产负债表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "BS_OTHERCURRENTLIABILITY",
+      "statement": "资产负债表",
+      "role": "负债压力/经营性负债类",
+      "role_hint": "关注杠杆压力、偿债压力、供应链融资、预收支撑或负债收缩。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_Rank(X, 6)",
+        "TS_ZScore(X, 6)",
+        "Slope(X, 3)",
+        "TS_Drawdown(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "BS_OTHEREQUITYINSTRUMENTS",
+      "statement": "资产负债表",
+      "role": "规模/权益结构类",
+      "role_hint": "作为目标科目时重点观察自身扩张速度、历史位置或异常变化。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_Rank(X, 6)",
+        "TS_ZScore(X, 6)",
+        "Slope(X, 3)",
+        "TS_PastHighGap(X, 6)",
+        "TS_ConsecutiveGrowth(X, 3)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "BS_OTHERNONCURRENTASSETS",
+      "statement": "资产负债表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "BS_OTHERNONCURRENTLIABILITY",
+      "statement": "资产负债表",
+      "role": "负债压力/经营性负债类",
+      "role_hint": "关注杠杆压力、偿债压力、供应链融资、预收支撑或负债收缩。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_Rank(X, 6)",
+        "TS_ZScore(X, 6)",
+        "Slope(X, 3)",
+        "TS_Drawdown(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "BS_OTHERPAYABLE",
+      "statement": "资产负债表",
+      "role": "负债压力/经营性负债类",
+      "role_hint": "关注杠杆压力、偿债压力、供应链融资、预收支撑或负债收缩。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "较窄口径其他应付款，可保留，但跨期分析时更建议优先用 ED 口径。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_Rank(X, 6)",
+        "TS_ZScore(X, 6)",
+        "Slope(X, 3)",
+        "TS_Drawdown(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "BS_OTHERPAYABLEED",
+      "statement": "资产负债表",
+      "role": "负债压力/经营性负债类",
+      "role_hint": "关注杠杆压力、偿债压力、供应链融资、预收支撑或负债收缩。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "包含利息和股利的宽口径其他应付款，跨准则更平滑。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_Rank(X, 6)",
+        "TS_ZScore(X, 6)",
+        "Slope(X, 3)",
+        "TS_Drawdown(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "BS_OTHERRECEIVABLE",
+      "statement": "资产负债表",
+      "role": "经营资产/营运资本占用类",
+      "role_hint": "关注资产占用、回款压力、库存压力、异常扩张或释放。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_Rank(X, 6)",
+        "TS_ZScore(X, 6)",
+        "TS_Drawdown(X, 6)",
+        "TS_PastHighGap(X, 6)",
+        "TS_RegressionResidual(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "BS_OTHERRECEIVABLEED",
+      "statement": "资产负债表",
+      "role": "经营资产/营运资本占用类",
+      "role_hint": "关注资产占用、回款压力、库存压力、异常扩张或释放。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "包含利息和股利的宽口径其他应收款，跨准则更平滑。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_Rank(X, 6)",
+        "TS_ZScore(X, 6)",
+        "TS_Drawdown(X, 6)",
+        "TS_PastHighGap(X, 6)",
+        "TS_RegressionResidual(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "BS_OTHNONCURFINASSETS",
+      "statement": "资产负债表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "BS_PAIDINCAPITAL",
+      "statement": "资产负债表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "实收资本适合资本结构背景分析，不是首选分母。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "BS_RECEIVABLESFIN",
+      "statement": "资产负债表",
+      "role": "经营资产/营运资本占用类",
+      "role_hint": "关注资产占用、回款压力、库存压力、异常扩张或释放。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "金融类应收，不宜直接与经营性应收混用。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_Rank(X, 6)",
+        "TS_ZScore(X, 6)",
+        "TS_Drawdown(X, 6)",
+        "TS_PastHighGap(X, 6)",
+        "TS_RegressionResidual(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "BS_RETAINEDPROFIT",
+      "statement": "资产负债表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "未分配利润适合积累能力和资产负债表质量分析。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "BS_SALARIESPAYABLE",
+      "statement": "资产负债表",
+      "role": "负债压力/经营性负债类",
+      "role_hint": "关注杠杆压力、偿债压力、供应链融资、预收支撑或负债收缩。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "应付职工薪酬有用，但更适合作为辅助背景项。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_Rank(X, 6)",
+        "TS_ZScore(X, 6)",
+        "Slope(X, 3)",
+        "TS_Drawdown(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "BS_SEWITHOUTMI",
+      "statement": "资产负债表",
+      "role": "规模/权益结构类",
+      "role_hint": "作为目标科目时重点观察自身扩张速度、历史位置或异常变化。",
+      "governance_tags": [
+        "denominator"
+      ],
+      "note": "不含少数股东权益的净资产，适合母公司口径回报分析。",
+      "recommended_templates": [
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_Rank(X, 6)",
+        "TS_ZScore(X, 6)",
+        "Slope(X, 3)",
+        "TS_PastHighGap(X, 6)",
+        "TS_ConsecutiveGrowth(X, 3)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段常被用作规模锚；但作为本轮目标科目时，只研究其自身扩张速度、历史位置或异常变化。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "BS_SHORTTERMLOAN",
+      "statement": "资产负债表",
+      "role": "负债压力/经营性负债类",
+      "role_hint": "关注杠杆压力、偿债压力、供应链融资、预收支撑或负债收缩。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_Rank(X, 6)",
+        "TS_ZScore(X, 6)",
+        "Slope(X, 3)",
+        "TS_Drawdown(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "BS_SPECIFICACCOUNTPAYABLE",
+      "statement": "资产负债表",
+      "role": "负债压力/经营性负债类",
+      "role_hint": "关注杠杆压力、偿债压力、供应链融资、预收支撑或负债收缩。",
+      "governance_tags": [
+        "note_like"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_Rank(X, 6)",
+        "TS_ZScore(X, 6)",
+        "Slope(X, 3)",
+        "TS_Drawdown(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "BS_SPECIFICRESERVES",
+      "statement": "资产负债表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "note_like"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "BS_SURPLUSRESERVEFUND",
+      "statement": "资产负债表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "盈余公积更适合作为背景项，不是主干因子。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "BS_TAXSPAYABLE",
+      "statement": "资产负债表",
+      "role": "成本费用/税费类",
+      "role_hint": "关注费用压力、成本压力、异常上升或下降，以及自身历史位置变化。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "TTM(X)",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)",
+        "TS_ConsecutiveGrowth(X, 3)",
+        "Sub(0, YOY(X))"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "BS_TCONSTRUINPROCESS",
+      "statement": "资产负债表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "在建工程合计口径，优先于单独在建工程字段。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "BS_TOTALASSETS",
+      "statement": "资产负债表",
+      "role": "规模/权益结构类",
+      "role_hint": "作为目标科目时重点观察自身扩张速度、历史位置或异常变化。",
+      "governance_tags": [
+        "focus",
+        "denominator"
+      ],
+      "note": "资产规模主锚，适合做分母和标准化基准。",
+      "recommended_templates": [
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_Rank(X, 6)",
+        "TS_ZScore(X, 6)",
+        "Slope(X, 3)",
+        "TS_PastHighGap(X, 6)",
+        "TS_ConsecutiveGrowth(X, 3)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段常被用作规模锚；但作为本轮目标科目时，只研究其自身扩张速度、历史位置或异常变化。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "BS_TOTALCURRENTASSETS",
+      "statement": "资产负债表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "focus",
+        "denominator"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段常被用作规模锚；但作为本轮目标科目时，只研究其自身扩张速度、历史位置或异常变化。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "BS_TOTALCURRENTLIABILITY",
+      "statement": "资产负债表",
+      "role": "负债压力/经营性负债类",
+      "role_hint": "关注杠杆压力、偿债压力、供应链融资、预收支撑或负债收缩。",
+      "governance_tags": [
+        "focus",
+        "denominator"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_Rank(X, 6)",
+        "TS_ZScore(X, 6)",
+        "Slope(X, 3)",
+        "TS_Drawdown(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段常被用作规模锚；但作为本轮目标科目时，只研究其自身扩张速度、历史位置或异常变化。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "BS_TOTALFIXEDASSET",
+      "statement": "资产负债表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "BS_TOTALLIABILITY",
+      "statement": "资产负债表",
+      "role": "负债压力/经营性负债类",
+      "role_hint": "关注杠杆压力、偿债压力、供应链融资、预收支撑或负债收缩。",
+      "governance_tags": [
+        "focus",
+        "denominator"
+      ],
+      "note": "总负债主锚，适合杠杆与偿债压力分析。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_Rank(X, 6)",
+        "TS_ZScore(X, 6)",
+        "Slope(X, 3)",
+        "TS_Drawdown(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段常被用作规模锚；但作为本轮目标科目时，只研究其自身扩张速度、历史位置或异常变化。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "BS_TOTALNONCURRENTASSETS",
+      "statement": "资产负债表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "focus",
+        "denominator"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段常被用作规模锚；但作为本轮目标科目时，只研究其自身扩张速度、历史位置或异常变化。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "BS_TOTALNONCURRENTLIABILITY",
+      "statement": "资产负债表",
+      "role": "负债压力/经营性负债类",
+      "role_hint": "关注杠杆压力、偿债压力、供应链融资、预收支撑或负债收缩。",
+      "governance_tags": [
+        "focus",
+        "denominator"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_Rank(X, 6)",
+        "TS_ZScore(X, 6)",
+        "Slope(X, 3)",
+        "TS_Drawdown(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段常被用作规模锚；但作为本轮目标科目时，只研究其自身扩张速度、历史位置或异常变化。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "BS_TOTALSHAREHOLDEREQUITY",
+      "statement": "资产负债表",
+      "role": "规模/权益结构类",
+      "role_hint": "作为目标科目时重点观察自身扩张速度、历史位置或异常变化。",
+      "governance_tags": [
+        "focus",
+        "denominator"
+      ],
+      "note": "净资产主锚，适合权益回报类因子。",
+      "recommended_templates": [
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_Rank(X, 6)",
+        "TS_ZScore(X, 6)",
+        "Slope(X, 3)",
+        "TS_PastHighGap(X, 6)",
+        "TS_ConsecutiveGrowth(X, 3)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段常被用作规模锚；但作为本轮目标科目时，只研究其自身扩张速度、历史位置或异常变化。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "BS_TRADINGASSETS",
+      "statement": "资产负债表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "交易性金融资产，谨慎用于经营质量因子。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "BS_TRADINGLIABILITY",
+      "statement": "资产负债表",
+      "role": "负债压力/经营性负债类",
+      "role_hint": "关注杠杆压力、偿债压力、供应链融资、预收支撑或负债收缩。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_Rank(X, 6)",
+        "TS_ZScore(X, 6)",
+        "Slope(X, 3)",
+        "TS_Drawdown(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "BS_TREASURYSTOCK",
+      "statement": "资产负债表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "库存股适合权益结构修正分析。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "BS_USUFRUCTASSETS",
+      "statement": "资产负债表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "cautious",
+        "note_like"
+      ],
+      "note": "使用权资产适合租赁结构修正，不宜直接当成普通经营资产。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。",
+        "资产负债表余额类科目的历史高低点绝对差额可能带有公司体量暴露；优先尝试 TS_Rank、TS_ZScore、YOY 等自身历史无量纲状态，再将 TS_PastHighGap/TS_PastLowGap 作为补充观察。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "CFS_ALLTAXESPAID",
+      "statement": "现金流量表",
+      "role": "成本费用/税费类",
+      "role_hint": "关注费用压力、成本压力、异常上升或下降，以及自身历史位置变化。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "支付税费适合辅助验证税负与利润兑现。",
+      "recommended_templates": [
+        "TTM(X)",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)",
+        "TS_ConsecutiveGrowth(X, 3)",
+        "Sub(0, YOY(X))"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "CFS_ASSETSDEPRECIATIONRESERVES",
+      "statement": "现金流量表",
+      "role": "成本费用/税费类",
+      "role_hint": "关注费用压力、成本压力、异常上升或下降，以及自身历史位置变化。",
+      "governance_tags": [
+        "note_like"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "TTM(X)",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)",
+        "TS_ConsecutiveGrowth(X, 3)",
+        "Sub(0, YOY(X))"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "CFS_BEGINPERIODCASH",
+      "statement": "现金流量表",
+      "role": "现金流类",
+      "role_hint": "关注现金兑现、现金流入流出压力、真实造血和现金端异常变化。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "期初现金及现金等价物余额属于状态项，更适合作为背景信息。",
+      "recommended_templates": [
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "Slope(TTM(X), 3)",
+        "TS_Surprise(X, 3, 6)",
+        "TS_Rank(YOY(X), 6)",
+        "TS_Drawdown(TTM(X), 6)",
+        "TS_ConsecutiveGrowth(YOY(X), 3)",
+        "TS_ZScore(Delta(TTM(X), 3), 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "CFS_BORROWINGREPAYMENT",
+      "statement": "现金流量表",
+      "role": "负债压力/经营性负债类",
+      "role_hint": "关注杠杆压力、偿债压力、供应链融资、预收支撑或负债收缩。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "偿还债务支付现金适合杠杆压力和再融资依赖分析。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_Rank(X, 6)",
+        "TS_ZScore(X, 6)",
+        "Slope(X, 3)",
+        "TS_Drawdown(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "CFS_CASHATBEGINNINGOFYEAR",
+      "statement": "现金流量表",
+      "role": "现金流类",
+      "role_hint": "关注现金兑现、现金流入流出压力、真实造血和现金端异常变化。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "Slope(TTM(X), 3)",
+        "TS_Surprise(X, 3, 6)",
+        "TS_Rank(YOY(X), 6)",
+        "TS_Drawdown(TTM(X), 6)",
+        "TS_ConsecutiveGrowth(YOY(X), 3)",
+        "TS_ZScore(Delta(TTM(X), 3), 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "CFS_CASHATENDOFYEAR",
+      "statement": "现金流量表",
+      "role": "现金流类",
+      "role_hint": "关注现金兑现、现金流入流出压力、真实造血和现金端异常变化。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "Slope(TTM(X), 3)",
+        "TS_Surprise(X, 3, 6)",
+        "TS_Rank(YOY(X), 6)",
+        "TS_Drawdown(TTM(X), 6)",
+        "TS_ConsecutiveGrowth(YOY(X), 3)",
+        "TS_ZScore(Delta(TTM(X), 3), 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "CFS_CASHEQUIVALENTINCREASE",
+      "statement": "现金流量表",
+      "role": "现金流类",
+      "role_hint": "关注现金兑现、现金流入流出压力、真实造血和现金端异常变化。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "Slope(TTM(X), 3)",
+        "TS_Surprise(X, 3, 6)",
+        "TS_Rank(YOY(X), 6)",
+        "TS_Drawdown(TTM(X), 6)",
+        "TS_ConsecutiveGrowth(YOY(X), 3)",
+        "TS_ZScore(Delta(TTM(X), 3), 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "CFS_CASHFROMBORROWING",
+      "statement": "现金流量表",
+      "role": "现金流类",
+      "role_hint": "关注现金兑现、现金流入流出压力、真实造血和现金端异常变化。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "取得借款收到现金适合外部融资依赖分析。",
+      "recommended_templates": [
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "Slope(TTM(X), 3)",
+        "TS_Surprise(X, 3, 6)",
+        "TS_Rank(YOY(X), 6)",
+        "TS_Drawdown(TTM(X), 6)",
+        "TS_ConsecutiveGrowth(YOY(X), 3)",
+        "TS_ZScore(Delta(TTM(X), 3), 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "CFS_CASHFROMINVEST",
+      "statement": "现金流量表",
+      "role": "现金流类",
+      "role_hint": "关注现金兑现、现金流入流出压力、真实造血和现金端异常变化。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "投资活动现金流入总口径较宽，适合谨慎使用。",
+      "recommended_templates": [
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "Slope(TTM(X), 3)",
+        "TS_Surprise(X, 3, 6)",
+        "TS_Rank(YOY(X), 6)",
+        "TS_Drawdown(TTM(X), 6)",
+        "TS_ConsecutiveGrowth(YOY(X), 3)",
+        "TS_ZScore(Delta(TTM(X), 3), 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "CFS_CASHFROMMINOSINVESTSUB",
+      "statement": "现金流量表",
+      "role": "现金流类",
+      "role_hint": "关注现金兑现、现金流入流出压力、真实造血和现金端异常变化。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "Slope(TTM(X), 3)",
+        "TS_Surprise(X, 3, 6)",
+        "TS_Rank(YOY(X), 6)",
+        "TS_Drawdown(TTM(X), 6)",
+        "TS_ConsecutiveGrowth(YOY(X), 3)",
+        "TS_ZScore(Delta(TTM(X), 3), 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "CFS_CREDITIMPAIRMENTL",
+      "statement": "现金流量表",
+      "role": "风险扰动/非核心项目类",
+      "role_hint": "关注异常冲击、质量修正和风险暴露，不宜机械解释为优势。",
+      "governance_tags": [
+        "cautious",
+        "note_like"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_RegressionResidual(X, 6)",
+        "TS_PastHighGap(X, 6)",
+        "TS_SignFlip(X, 1)",
+        "Sub(0, TS_ZScore(X, 6))"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "CFS_DEFEREDTAXASSETDECREASE",
+      "statement": "现金流量表",
+      "role": "成本费用/税费类",
+      "role_hint": "关注费用压力、成本压力、异常上升或下降，以及自身历史位置变化。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "TTM(X)",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)",
+        "TS_ConsecutiveGrowth(X, 3)",
+        "Sub(0, YOY(X))"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "CFS_DEFEREDTAXLIABILITYINCREASE",
+      "statement": "现金流量表",
+      "role": "成本费用/税费类",
+      "role_hint": "关注费用压力、成本压力、异常上升或下降，以及自身历史位置变化。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "TTM(X)",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)",
+        "TS_ConsecutiveGrowth(X, 3)",
+        "Sub(0, YOY(X))"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "CFS_DEFERREDEXPENSEAMORT",
+      "statement": "现金流量表",
+      "role": "成本费用/税费类",
+      "role_hint": "关注费用压力、成本压力、异常上升或下降，以及自身历史位置变化。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "待摊费用摊销适合质量修正，但通常是辅助项。",
+      "recommended_templates": [
+        "TTM(X)",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)",
+        "TS_ConsecutiveGrowth(X, 3)",
+        "Sub(0, YOY(X))"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "CFS_DIVIDENDINTERESTPAYMENT",
+      "statement": "现金流量表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "分配股利、利润或偿付利息支付现金更适合作为分配和融资负担分析项。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "CFS_ENDPERIODCASHEQUIVALENT",
+      "statement": "现金流量表",
+      "role": "现金流类",
+      "role_hint": "关注现金兑现、现金流入流出压力、真实造血和现金端异常变化。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "期末现金及现金等价物余额属于状态项，更适合作为背景信息。",
+      "recommended_templates": [
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "Slope(TTM(X), 3)",
+        "TS_Surprise(X, 3, 6)",
+        "TS_Rank(YOY(X), 6)",
+        "TS_Drawdown(TTM(X), 6)",
+        "TS_ConsecutiveGrowth(YOY(X), 3)",
+        "TS_ZScore(Delta(TTM(X), 3), 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "CFS_EXCHANRATECHANGEEFFECT",
+      "statement": "现金流量表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "CFS_FINANCIALEXPENSE",
+      "statement": "现金流量表",
+      "role": "成本费用/税费类",
+      "role_hint": "关注费用压力、成本压力、异常上升或下降，以及自身历史位置变化。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "TTM(X)",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)",
+        "TS_ConsecutiveGrowth(X, 3)",
+        "Sub(0, YOY(X))"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "CFS_FIXEDASSETDEPRECIATION",
+      "statement": "现金流量表",
+      "role": "成本费用/税费类",
+      "role_hint": "关注费用压力、成本压力、异常上升或下降，以及自身历史位置变化。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "固定资产折旧是高价值非现金费用字段，适合应计质量分析。",
+      "recommended_templates": [
+        "TTM(X)",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)",
+        "TS_ConsecutiveGrowth(X, 3)",
+        "Sub(0, YOY(X))"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "CFS_FIXEDASSETSCRAPLOSS",
+      "statement": "现金流量表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "note_like"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "CFS_FIXINTANOTHERASSETACQUICASH",
+      "statement": "现金流量表",
+      "role": "现金流类",
+      "role_hint": "关注现金兑现、现金流入流出压力、真实造血和现金端异常变化。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "购建固定资产、无形资产和其他长期资产支付的现金，是较强的资本开支字段。",
+      "recommended_templates": [
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "Slope(TTM(X), 3)",
+        "TS_Surprise(X, 3, 6)",
+        "TS_Rank(YOY(X), 6)",
+        "TS_Drawdown(TTM(X), 6)",
+        "TS_ConsecutiveGrowth(YOY(X), 3)",
+        "TS_ZScore(Delta(TTM(X), 3), 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "CFS_FIXINTANOTHERASSETDISPOCASH",
+      "statement": "现金流量表",
+      "role": "现金流类",
+      "role_hint": "关注现金兑现、现金流入流出压力、真实造血和现金端异常变化。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "处置固定资产、无形资产和其他长期资产收回现金更适合作为谨慎辅助项。",
+      "recommended_templates": [
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "Slope(TTM(X), 3)",
+        "TS_Surprise(X, 3, 6)",
+        "TS_Rank(YOY(X), 6)",
+        "TS_Drawdown(TTM(X), 6)",
+        "TS_ConsecutiveGrowth(YOY(X), 3)",
+        "TS_ZScore(Delta(TTM(X), 3), 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "CFS_FIXINTANOTHERASSETDISPOLOSS",
+      "statement": "现金流量表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "note_like"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "CFS_GOODSSALESERVICERENDERCASH",
+      "statement": "现金流量表",
+      "role": "收入/需求类",
+      "role_hint": "关注增长、趋势、历史位置和超预期，描述需求扩张或收缩状态。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "销售收现适合收入兑现度验证。",
+      "recommended_templates": [
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "Slope(TTM(X), 3)",
+        "TS_Surprise(X, 3, 6)",
+        "TS_Rank(YOY(X), 6)",
+        "TS_Drawdown(TTM(X), 6)",
+        "TS_ConsecutiveGrowth(YOY(X), 3)",
+        "TS_ZScore(Delta(TTM(X), 3), 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "CFS_GOODSSERVICESCASHPAID",
+      "statement": "现金流量表",
+      "role": "现金流类",
+      "role_hint": "关注现金兑现、现金流入流出压力、真实造血和现金端异常变化。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "购买商品劳务支付现金适合现金成本强度分析。",
+      "recommended_templates": [
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "Slope(TTM(X), 3)",
+        "TS_Surprise(X, 3, 6)",
+        "TS_Rank(YOY(X), 6)",
+        "TS_Drawdown(TTM(X), 6)",
+        "TS_ConsecutiveGrowth(YOY(X), 3)",
+        "TS_ZScore(Delta(TTM(X), 3), 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "CFS_INTANGIBLEASSETAMORTIZATION",
+      "statement": "现金流量表",
+      "role": "成本费用/税费类",
+      "role_hint": "关注费用压力、成本压力、异常上升或下降，以及自身历史位置变化。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "无形资产摊销适合摊销负担和质量分析。",
+      "recommended_templates": [
+        "TTM(X)",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)",
+        "TS_ConsecutiveGrowth(X, 3)",
+        "Sub(0, YOY(X))"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "CFS_INVENTORYDECREASE",
+      "statement": "现金流量表",
+      "role": "经营资产/营运资本占用类",
+      "role_hint": "关注资产占用、回款压力、库存压力、异常扩张或释放。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "存货减少适合做营运资本释放和现金转换验证，但更适合作为辅助项。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_Rank(X, 6)",
+        "TS_ZScore(X, 6)",
+        "TS_Drawdown(X, 6)",
+        "TS_PastHighGap(X, 6)",
+        "TS_RegressionResidual(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "CFS_INVESTCASHPAID",
+      "statement": "现金流量表",
+      "role": "现金流类",
+      "role_hint": "关注现金兑现、现金流入流出压力、真实造血和现金端异常变化。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "投资支付现金适合扩张强度分析。",
+      "recommended_templates": [
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "Slope(TTM(X), 3)",
+        "TS_Surprise(X, 3, 6)",
+        "TS_Rank(YOY(X), 6)",
+        "TS_Drawdown(TTM(X), 6)",
+        "TS_ConsecutiveGrowth(YOY(X), 3)",
+        "TS_ZScore(Delta(TTM(X), 3), 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "CFS_INVESTLOSS",
+      "statement": "现金流量表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "投资损失更适合作为现金流重构中的修正项。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "CFS_INVESTPROCEEDS",
+      "statement": "现金流量表",
+      "role": "现金流类",
+      "role_hint": "关注现金兑现、现金流入流出压力、真实造血和现金端异常变化。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "取得投资收益收到现金适合变现和退出分析。",
+      "recommended_templates": [
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "Slope(TTM(X), 3)",
+        "TS_Surprise(X, 3, 6)",
+        "TS_Rank(YOY(X), 6)",
+        "TS_Drawdown(TTM(X), 6)",
+        "TS_ConsecutiveGrowth(YOY(X), 3)",
+        "TS_ZScore(Delta(TTM(X), 3), 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "CFS_INVESTWITHDRAWALCASH",
+      "statement": "现金流量表",
+      "role": "现金流类",
+      "role_hint": "关注现金兑现、现金流入流出压力、真实造血和现金端异常变化。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "收回投资收到现金适合投资回收分析，但不是通用经营主干。",
+      "recommended_templates": [
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "Slope(TTM(X), 3)",
+        "TS_Surprise(X, 3, 6)",
+        "TS_Rank(YOY(X), 6)",
+        "TS_Drawdown(TTM(X), 6)",
+        "TS_ConsecutiveGrowth(YOY(X), 3)",
+        "TS_ZScore(Delta(TTM(X), 3), 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "CFS_LOSSFROMFAIRVALUECHANGES",
+      "statement": "现金流量表",
+      "role": "风险扰动/非核心项目类",
+      "role_hint": "关注异常冲击、质量修正和风险暴露，不宜机械解释为优势。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "公允价值变动损失偏非核心，更适合作为修正项。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_RegressionResidual(X, 6)",
+        "TS_PastHighGap(X, 6)",
+        "TS_SignFlip(X, 1)",
+        "Sub(0, TS_ZScore(X, 6))"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "CFS_NETCASHDEALSUBCOMPANY",
+      "statement": "现金流量表",
+      "role": "现金流类",
+      "role_hint": "关注现金兑现、现金流入流出压力、真实造血和现金端异常变化。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "Slope(TTM(X), 3)",
+        "TS_Surprise(X, 3, 6)",
+        "TS_Rank(YOY(X), 6)",
+        "TS_Drawdown(TTM(X), 6)",
+        "TS_ConsecutiveGrowth(YOY(X), 3)",
+        "TS_ZScore(Delta(TTM(X), 3), 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "CFS_NETCASHFROMSUBCOMPANY",
+      "statement": "现金流量表",
+      "role": "现金流类",
+      "role_hint": "关注现金兑现、现金流入流出压力、真实造血和现金端异常变化。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "Slope(TTM(X), 3)",
+        "TS_Surprise(X, 3, 6)",
+        "TS_Rank(YOY(X), 6)",
+        "TS_Drawdown(TTM(X), 6)",
+        "TS_ConsecutiveGrowth(YOY(X), 3)",
+        "TS_ZScore(Delta(TTM(X), 3), 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "CFS_NETFINANCECASHFLOW",
+      "statement": "现金流量表",
+      "role": "现金流类",
+      "role_hint": "关注现金兑现、现金流入流出压力、真实造血和现金端异常变化。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "融资现金流净额适合外部输血和融资依赖分析。",
+      "recommended_templates": [
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "Slope(TTM(X), 3)",
+        "TS_Surprise(X, 3, 6)",
+        "TS_Rank(YOY(X), 6)",
+        "TS_Drawdown(TTM(X), 6)",
+        "TS_ConsecutiveGrowth(YOY(X), 3)",
+        "TS_ZScore(Delta(TTM(X), 3), 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "CFS_NETINCRINCASHANDEQUIVALENTS",
+      "statement": "现金流量表",
+      "role": "现金流类",
+      "role_hint": "关注现金兑现、现金流入流出压力、真实造血和现金端异常变化。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "Slope(TTM(X), 3)",
+        "TS_Surprise(X, 3, 6)",
+        "TS_Rank(YOY(X), 6)",
+        "TS_Drawdown(TTM(X), 6)",
+        "TS_ConsecutiveGrowth(YOY(X), 3)",
+        "TS_ZScore(Delta(TTM(X), 3), 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "CFS_NETINVESTCASHFLOW",
+      "statement": "现金流量表",
+      "role": "现金流类",
+      "role_hint": "关注现金兑现、现金流入流出压力、真实造血和现金端异常变化。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "投资现金流净额适合扩张或收缩节奏分析。",
+      "recommended_templates": [
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "Slope(TTM(X), 3)",
+        "TS_Surprise(X, 3, 6)",
+        "TS_Rank(YOY(X), 6)",
+        "TS_Drawdown(TTM(X), 6)",
+        "TS_ConsecutiveGrowth(YOY(X), 3)",
+        "TS_ZScore(Delta(TTM(X), 3), 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "CFS_NETOPERATECASHFLOW",
+      "statement": "现金流量表",
+      "role": "现金流类",
+      "role_hint": "关注现金兑现、现金流入流出压力、真实造血和现金端异常变化。",
+      "governance_tags": [
+        "focus",
+        "denominator"
+      ],
+      "note": "经营现金流主锚，适合现金利润匹配和质量分析。",
+      "recommended_templates": [
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "Slope(TTM(X), 3)",
+        "TS_Surprise(X, 3, 6)",
+        "TS_Rank(YOY(X), 6)",
+        "TS_Drawdown(TTM(X), 6)",
+        "TS_ConsecutiveGrowth(YOY(X), 3)",
+        "TS_ZScore(Delta(TTM(X), 3), 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段常被用作规模锚；但作为本轮目标科目时，只研究其自身扩张速度、历史位置或异常变化。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "CFS_NETOPERATECASHFLOWNOTES",
+      "statement": "现金流量表",
+      "role": "现金流类",
+      "role_hint": "关注现金兑现、现金流入流出压力、真实造血和现金端异常变化。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "与经营现金流概念接近，可用，但应避免与主字段重复使用。",
+      "recommended_templates": [
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "Slope(TTM(X), 3)",
+        "TS_Surprise(X, 3, 6)",
+        "TS_Rank(YOY(X), 6)",
+        "TS_Drawdown(TTM(X), 6)",
+        "TS_ConsecutiveGrowth(YOY(X), 3)",
+        "TS_ZScore(Delta(TTM(X), 3), 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "CFS_NETPROFIT",
+      "statement": "现金流量表",
+      "role": "利润/盈利类",
+      "role_hint": "关注盈利修复、趋势斜率、标准化意外和持续改善。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "现金流表口径下的净利润可保留，但不要当成与利润表净利润完全独立的新概念。",
+      "recommended_templates": [
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "Slope(TTM(X), 3)",
+        "TS_Surprise(X, 3, 6)",
+        "TS_Rank(YOY(X), 6)",
+        "TS_Drawdown(TTM(X), 6)",
+        "TS_ConsecutiveGrowth(YOY(X), 3)",
+        "TS_ZScore(Delta(TTM(X), 3), 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "CFS_OPERATEPAYABLEINCREASE",
+      "statement": "现金流量表",
+      "role": "负债压力/经营性负债类",
+      "role_hint": "关注杠杆压力、偿债压力、供应链融资、预收支撑或负债收缩。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "经营性应付增加反映应付支撑，是较强的现金支持字段。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_Rank(X, 6)",
+        "TS_ZScore(X, 6)",
+        "Slope(X, 3)",
+        "TS_Drawdown(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "CFS_OPERATERECEIVABLEDECREASE",
+      "statement": "现金流量表",
+      "role": "经营资产/营运资本占用类",
+      "role_hint": "关注资产占用、回款压力、库存压力、异常扩张或释放。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "经营性应收减少反映回款释放，是较强的现金转换字段。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_Rank(X, 6)",
+        "TS_ZScore(X, 6)",
+        "TS_Drawdown(X, 6)",
+        "TS_PastHighGap(X, 6)",
+        "TS_RegressionResidual(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "CFS_OTHERCASHFROMINVESTACT",
+      "statement": "现金流量表",
+      "role": "现金流类",
+      "role_hint": "关注现金兑现、现金流入流出压力、真实造血和现金端异常变化。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "投资活动其他现金流入属于宽口径“其他”项，应谨慎使用。",
+      "recommended_templates": [
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "Slope(TTM(X), 3)",
+        "TS_Surprise(X, 3, 6)",
+        "TS_Rank(YOY(X), 6)",
+        "TS_Drawdown(TTM(X), 6)",
+        "TS_ConsecutiveGrowth(YOY(X), 3)",
+        "TS_ZScore(Delta(TTM(X), 3), 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "CFS_OTHERCASHINRELATEDOPERATE",
+      "statement": "现金流量表",
+      "role": "现金流类",
+      "role_hint": "关注现金兑现、现金流入流出压力、真实造血和现金端异常变化。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "经营活动有关的其他现金流入可以使用，但“其他”属性较强，应保持谨慎。",
+      "recommended_templates": [
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "Slope(TTM(X), 3)",
+        "TS_Surprise(X, 3, 6)",
+        "TS_Rank(YOY(X), 6)",
+        "TS_Drawdown(TTM(X), 6)",
+        "TS_ConsecutiveGrowth(YOY(X), 3)",
+        "TS_ZScore(Delta(TTM(X), 3), 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "CFS_OTHERCASHTOINVESTACT",
+      "statement": "现金流量表",
+      "role": "现金流类",
+      "role_hint": "关注现金兑现、现金流入流出压力、真实造血和现金端异常变化。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "投资活动其他现金流出属于宽口径“其他”项，应谨慎使用。",
+      "recommended_templates": [
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "Slope(TTM(X), 3)",
+        "TS_Surprise(X, 3, 6)",
+        "TS_Rank(YOY(X), 6)",
+        "TS_Drawdown(TTM(X), 6)",
+        "TS_ConsecutiveGrowth(YOY(X), 3)",
+        "TS_ZScore(Delta(TTM(X), 3), 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "CFS_OTHERFINANCEACTCASH",
+      "statement": "现金流量表",
+      "role": "现金流类",
+      "role_hint": "关注现金兑现、现金流入流出压力、真实造血和现金端异常变化。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "筹资活动其他现金流入属于宽口径“其他”项，应谨慎使用。",
+      "recommended_templates": [
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "Slope(TTM(X), 3)",
+        "TS_Surprise(X, 3, 6)",
+        "TS_Rank(YOY(X), 6)",
+        "TS_Drawdown(TTM(X), 6)",
+        "TS_ConsecutiveGrowth(YOY(X), 3)",
+        "TS_ZScore(Delta(TTM(X), 3), 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "CFS_OTHERFINANCEACTPAYMENT",
+      "statement": "现金流量表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "筹资活动其他现金流出属于宽口径“其他”项，应谨慎使用。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "CFS_OTHEROPERATECASHPAID",
+      "statement": "现金流量表",
+      "role": "现金流类",
+      "role_hint": "关注现金兑现、现金流入流出压力、真实造血和现金端异常变化。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "经营活动有关的其他现金流出可以使用，但“其他”属性较强，应保持谨慎。",
+      "recommended_templates": [
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "Slope(TTM(X), 3)",
+        "TS_Surprise(X, 3, 6)",
+        "TS_Rank(YOY(X), 6)",
+        "TS_Drawdown(TTM(X), 6)",
+        "TS_ConsecutiveGrowth(YOY(X), 3)",
+        "TS_ZScore(Delta(TTM(X), 3), 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "CFS_PROCEEDSFROMSUBTOMINOS",
+      "statement": "现金流量表",
+      "role": "现金流类",
+      "role_hint": "关注现金兑现、现金流入流出压力、真实造血和现金端异常变化。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "Slope(TTM(X), 3)",
+        "TS_Surprise(X, 3, 6)",
+        "TS_Rank(YOY(X), 6)",
+        "TS_Drawdown(TTM(X), 6)",
+        "TS_ConsecutiveGrowth(YOY(X), 3)",
+        "TS_ZScore(Delta(TTM(X), 3), 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "CFS_STAFFBEHALFPAID",
+      "statement": "现金流量表",
+      "role": "现金流类",
+      "role_hint": "关注现金兑现、现金流入流出压力、真实造血和现金端异常变化。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "支付给职工以及为职工支付的现金，是很强的经营现金支出字段。",
+      "recommended_templates": [
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "Slope(TTM(X), 3)",
+        "TS_Surprise(X, 3, 6)",
+        "TS_Rank(YOY(X), 6)",
+        "TS_Drawdown(TTM(X), 6)",
+        "TS_ConsecutiveGrowth(YOY(X), 3)",
+        "TS_ZScore(Delta(TTM(X), 3), 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "CFS_SUBTOTALFINANCECASHINFLOW",
+      "statement": "现金流量表",
+      "role": "现金流类",
+      "role_hint": "关注现金兑现、现金流入流出压力、真实造血和现金端异常变化。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "筹资活动现金流入小计有用，但不是首选经营主信号。",
+      "recommended_templates": [
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "Slope(TTM(X), 3)",
+        "TS_Surprise(X, 3, 6)",
+        "TS_Rank(YOY(X), 6)",
+        "TS_Drawdown(TTM(X), 6)",
+        "TS_ConsecutiveGrowth(YOY(X), 3)",
+        "TS_ZScore(Delta(TTM(X), 3), 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "CFS_SUBTOTALFINANCECASHOUTFLOW",
+      "statement": "现金流量表",
+      "role": "现金流类",
+      "role_hint": "关注现金兑现、现金流入流出压力、真实造血和现金端异常变化。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "筹资活动现金流出小计有用，但不是首选经营主信号。",
+      "recommended_templates": [
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "Slope(TTM(X), 3)",
+        "TS_Surprise(X, 3, 6)",
+        "TS_Rank(YOY(X), 6)",
+        "TS_Drawdown(TTM(X), 6)",
+        "TS_ConsecutiveGrowth(YOY(X), 3)",
+        "TS_ZScore(Delta(TTM(X), 3), 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "CFS_SUBTOTALINVESTCASHINFLOW",
+      "statement": "现金流量表",
+      "role": "现金流类",
+      "role_hint": "关注现金兑现、现金流入流出压力、真实造血和现金端异常变化。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "投资活动现金流入小计有用，但不是首选经营主信号。",
+      "recommended_templates": [
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "Slope(TTM(X), 3)",
+        "TS_Surprise(X, 3, 6)",
+        "TS_Rank(YOY(X), 6)",
+        "TS_Drawdown(TTM(X), 6)",
+        "TS_ConsecutiveGrowth(YOY(X), 3)",
+        "TS_ZScore(Delta(TTM(X), 3), 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "CFS_SUBTOTALINVESTCASHOUTFLOW",
+      "statement": "现金流量表",
+      "role": "现金流类",
+      "role_hint": "关注现金兑现、现金流入流出压力、真实造血和现金端异常变化。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "投资活动现金流出小计有用，但不是首选经营主信号。",
+      "recommended_templates": [
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "Slope(TTM(X), 3)",
+        "TS_Surprise(X, 3, 6)",
+        "TS_Rank(YOY(X), 6)",
+        "TS_Drawdown(TTM(X), 6)",
+        "TS_ConsecutiveGrowth(YOY(X), 3)",
+        "TS_ZScore(Delta(TTM(X), 3), 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "CFS_SUBTOTALOPERATECASHINFLOW",
+      "statement": "现金流量表",
+      "role": "现金流类",
+      "role_hint": "关注现金兑现、现金流入流出压力、真实造血和现金端异常变化。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "Slope(TTM(X), 3)",
+        "TS_Surprise(X, 3, 6)",
+        "TS_Rank(YOY(X), 6)",
+        "TS_Drawdown(TTM(X), 6)",
+        "TS_ConsecutiveGrowth(YOY(X), 3)",
+        "TS_ZScore(Delta(TTM(X), 3), 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "CFS_SUBTOTALOPERATECASHOUTFLOW",
+      "statement": "现金流量表",
+      "role": "现金流类",
+      "role_hint": "关注现金兑现、现金流入流出压力、真实造血和现金端异常变化。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "Slope(TTM(X), 3)",
+        "TS_Surprise(X, 3, 6)",
+        "TS_Rank(YOY(X), 6)",
+        "TS_Drawdown(TTM(X), 6)",
+        "TS_ConsecutiveGrowth(YOY(X), 3)",
+        "TS_ZScore(Delta(TTM(X), 3), 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "CFS_TAXLEVYREFUND",
+      "statement": "现金流量表",
+      "role": "成本费用/税费类",
+      "role_hint": "关注费用压力、成本压力、异常上升或下降，以及自身历史位置变化。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "收到的税费返还适合做税务相关现金修正，但通常是辅助项。",
+      "recommended_templates": [
+        "TTM(X)",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)",
+        "TS_ConsecutiveGrowth(X, 3)",
+        "Sub(0, YOY(X))"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "CFS_USUFRUCTASSETSDA",
+      "statement": "现金流量表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "note_like"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "IS_ADMINISTRATIONEXPENSE",
+      "statement": "利润表",
+      "role": "成本费用/税费类",
+      "role_hint": "关注费用压力、成本压力、异常上升或下降，以及自身历史位置变化。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "TTM(X)",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)",
+        "TS_ConsecutiveGrowth(X, 3)",
+        "Sub(0, YOY(X))"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "IS_ASSETDEALINCOME",
+      "statement": "利润表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "IS_ASSETIMPAIRMENTLOSS",
+      "statement": "利润表",
+      "role": "风险扰动/非核心项目类",
+      "role_hint": "关注异常冲击、质量修正和风险暴露，不宜机械解释为优势。",
+      "governance_tags": [
+        "cautious",
+        "note_like"
+      ],
+      "note": "资产减值损失更适合作为风险标记和利润质量修正。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_RegressionResidual(X, 6)",
+        "TS_PastHighGap(X, 6)",
+        "TS_SignFlip(X, 1)",
+        "Sub(0, TS_ZScore(X, 6))"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "IS_ASSETIMPAIRMENTLOSSP",
+      "statement": "利润表",
+      "role": "风险扰动/非核心项目类",
+      "role_hint": "关注异常冲击、质量修正和风险暴露，不宜机械解释为优势。",
+      "governance_tags": [
+        "cautious",
+        "note_like"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_RegressionResidual(X, 6)",
+        "TS_PastHighGap(X, 6)",
+        "TS_SignFlip(X, 1)",
+        "Sub(0, TS_ZScore(X, 6))"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "IS_CIMINORITYOWNERS",
+      "statement": "利润表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "归属少数股东综合收益总额更适合作为结构背景项。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "IS_CIPARENTCOMPANYOWNERS",
+      "statement": "利润表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "归母综合收益总额更适合作为结构背景项。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "IS_CREDITIMPAIRMENTP",
+      "statement": "利润表",
+      "role": "风险扰动/非核心项目类",
+      "role_hint": "关注异常冲击、质量修正和风险暴露，不宜机械解释为优势。",
+      "governance_tags": [
+        "cautious",
+        "note_like"
+      ],
+      "note": "信用减值损失更适合作为质量和风险增强项。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_RegressionResidual(X, 6)",
+        "TS_PastHighGap(X, 6)",
+        "TS_SignFlip(X, 1)",
+        "Sub(0, TS_ZScore(X, 6))"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "IS_FAIRVALUECHANGEINCOME",
+      "statement": "利润表",
+      "role": "风险扰动/非核心项目类",
+      "role_hint": "关注异常冲击、质量修正和风险暴露，不宜机械解释为优势。",
+      "governance_tags": [
+        "cautious",
+        "note_like"
+      ],
+      "note": "公允价值变动收益非核心且受市场波动影响大，谨慎使用。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_RegressionResidual(X, 6)",
+        "TS_PastHighGap(X, 6)",
+        "TS_SignFlip(X, 1)",
+        "Sub(0, TS_ZScore(X, 6))"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "IS_FINANCIALEXPENSE",
+      "statement": "利润表",
+      "role": "成本费用/税费类",
+      "role_hint": "关注费用压力、成本压力、异常上升或下降，以及自身历史位置变化。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "财务费用适合融资负担分析，但受资本结构影响较大。",
+      "recommended_templates": [
+        "TTM(X)",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)",
+        "TS_ConsecutiveGrowth(X, 3)",
+        "Sub(0, YOY(X))"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "IS_INCOMETAXCOST",
+      "statement": "利润表",
+      "role": "成本费用/税费类",
+      "role_hint": "关注费用压力、成本压力、异常上升或下降，以及自身历史位置变化。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "所得税费用适合税负和利润兑现分析。",
+      "recommended_templates": [
+        "TTM(X)",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)",
+        "TS_ConsecutiveGrowth(X, 3)",
+        "Sub(0, YOY(X))"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "IS_INTERESTFINEXP",
+      "statement": "利润表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "利息费用是财务费用子项，通常次于更宽口径财务费用。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "IS_INTERESTINCOMEFIN",
+      "statement": "利润表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "利息收入更适合金融收益拆分，而不是通用经营 alpha。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "IS_INVESTINCOME",
+      "statement": "利润表",
+      "role": "风险扰动/非核心项目类",
+      "role_hint": "关注异常冲击、质量修正和风险暴露，不宜机械解释为优势。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "投资收益适合利润来源拆分，不宜默认等同核心经营盈利。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_RegressionResidual(X, 6)",
+        "TS_PastHighGap(X, 6)",
+        "TS_SignFlip(X, 1)",
+        "Sub(0, TS_ZScore(X, 6))"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "IS_INVESTINCOMEASSOCIATES",
+      "statement": "利润表",
+      "role": "风险扰动/非核心项目类",
+      "role_hint": "关注异常冲击、质量修正和风险暴露，不宜机械解释为优势。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_RegressionResidual(X, 6)",
+        "TS_PastHighGap(X, 6)",
+        "TS_SignFlip(X, 1)",
+        "Sub(0, TS_ZScore(X, 6))"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "IS_MINORITYPROFIT",
+      "statement": "利润表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "少数股东损益更适合作为股权结构背景项。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "IS_NETPROFIT",
+      "statement": "利润表",
+      "role": "利润/盈利类",
+      "role_hint": "关注盈利修复、趋势斜率、标准化意外和持续改善。",
+      "governance_tags": [
+        "focus",
+        "denominator"
+      ],
+      "note": "净利润是主干盈利字段，但要警惕非经常性扰动。",
+      "recommended_templates": [
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "Slope(TTM(X), 3)",
+        "TS_Surprise(X, 3, 6)",
+        "TS_Rank(YOY(X), 6)",
+        "TS_Drawdown(TTM(X), 6)",
+        "TS_ConsecutiveGrowth(YOY(X), 3)",
+        "TS_ZScore(Delta(TTM(X), 3), 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段常被用作规模锚；但作为本轮目标科目时，只研究其自身扩张速度、历史位置或异常变化。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "IS_NONCURRENTASSETSSDEALLOSS",
+      "statement": "利润表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "IS_NONOPERATINGEXPENSE",
+      "statement": "利润表",
+      "role": "成本费用/税费类",
+      "role_hint": "关注费用压力、成本压力、异常上升或下降，以及自身历史位置变化。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "营业外支出适合识别一次性扰动。",
+      "recommended_templates": [
+        "TTM(X)",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)",
+        "TS_ConsecutiveGrowth(X, 3)",
+        "Sub(0, YOY(X))"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "IS_NONOPERATINGINCOME",
+      "statement": "利润表",
+      "role": "风险扰动/非核心项目类",
+      "role_hint": "关注异常冲击、质量修正和风险暴露，不宜机械解释为优势。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "营业外收入更适合作为修正项或排雷项。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_RegressionResidual(X, 6)",
+        "TS_PastHighGap(X, 6)",
+        "TS_SignFlip(X, 1)",
+        "Sub(0, TS_ZScore(X, 6))"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "IS_NPPARENTCOMPANYOWNERS",
+      "statement": "利润表",
+      "role": "利润/盈利类",
+      "role_hint": "关注盈利修复、趋势斜率、标准化意外和持续改善。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "归母净利润更适合股东视角分析。",
+      "recommended_templates": [
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "Slope(TTM(X), 3)",
+        "TS_Surprise(X, 3, 6)",
+        "TS_Rank(YOY(X), 6)",
+        "TS_Drawdown(TTM(X), 6)",
+        "TS_ConsecutiveGrowth(YOY(X), 3)",
+        "TS_ZScore(Delta(TTM(X), 3), 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "IS_OCIEQUITYINIS",
+      "statement": "利润表",
+      "role": "规模/权益结构类",
+      "role_hint": "作为目标科目时重点观察自身扩张速度、历史位置或异常变化。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_Rank(X, 6)",
+        "TS_ZScore(X, 6)",
+        "Slope(X, 3)",
+        "TS_PastHighGap(X, 6)",
+        "TS_ConsecutiveGrowth(X, 3)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "IS_OCIFAIRVALUE",
+      "statement": "利润表",
+      "role": "风险扰动/非核心项目类",
+      "role_hint": "关注异常冲击、质量修正和风险暴露，不宜机械解释为优势。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_RegressionResidual(X, 6)",
+        "TS_PastHighGap(X, 6)",
+        "TS_SignFlip(X, 1)",
+        "Sub(0, TS_ZScore(X, 6))"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "IS_OCIFOREIGNCURRENCYFSA",
+      "statement": "利润表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "IS_OCIININCOMESTATEMENT",
+      "statement": "利润表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "IS_OCIMINORITYOWNERS",
+      "statement": "利润表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "IS_OCINOTININCOMESTATEMENT",
+      "statement": "利润表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "IS_OCIPARENTCOMPANYOWNERS",
+      "statement": "利润表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "IS_OPERATINGCOST",
+      "statement": "利润表",
+      "role": "成本费用/税费类",
+      "role_hint": "关注费用压力、成本压力、异常上升或下降，以及自身历史位置变化。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "TTM(X)",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)",
+        "TS_ConsecutiveGrowth(X, 3)",
+        "Sub(0, YOY(X))"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "IS_OPERATINGEXPENSE",
+      "statement": "利润表",
+      "role": "成本费用/税费类",
+      "role_hint": "关注费用压力、成本压力、异常上升或下降，以及自身历史位置变化。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "销售费用适合与管理、研发、财务费用一起做费用结构分析。",
+      "recommended_templates": [
+        "TTM(X)",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)",
+        "TS_ConsecutiveGrowth(X, 3)",
+        "Sub(0, YOY(X))"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "IS_OPERATINGPROFIT",
+      "statement": "利润表",
+      "role": "利润/盈利类",
+      "role_hint": "关注盈利修复、趋势斜率、标准化意外和持续改善。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "营业利润是核心经营盈利字段。",
+      "recommended_templates": [
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "Slope(TTM(X), 3)",
+        "TS_Surprise(X, 3, 6)",
+        "TS_Rank(YOY(X), 6)",
+        "TS_Drawdown(TTM(X), 6)",
+        "TS_ConsecutiveGrowth(YOY(X), 3)",
+        "TS_ZScore(Delta(TTM(X), 3), 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "IS_OPERATINGREVENUE",
+      "statement": "利润表",
+      "role": "收入/需求类",
+      "role_hint": "关注增长、趋势、历史位置和超预期，描述需求扩张或收缩状态。",
+      "governance_tags": [
+        "focus",
+        "denominator"
+      ],
+      "note": "营业收入主锚，是利润率类因子的优先分母。",
+      "recommended_templates": [
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "Slope(TTM(X), 3)",
+        "TS_Surprise(X, 3, 6)",
+        "TS_Rank(YOY(X), 6)",
+        "TS_Drawdown(TTM(X), 6)",
+        "TS_ConsecutiveGrowth(YOY(X), 3)",
+        "TS_ZScore(Delta(TTM(X), 3), 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段常被用作规模锚；但作为本轮目标科目时，只研究其自身扩张速度、历史位置或异常变化。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "IS_OPERATINGTAXSURCHARGES",
+      "statement": "利润表",
+      "role": "成本费用/税费类",
+      "role_hint": "关注费用压力、成本压力、异常上升或下降，以及自身历史位置变化。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "TTM(X)",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)",
+        "TS_ConsecutiveGrowth(X, 3)",
+        "Sub(0, YOY(X))"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "IS_OPERSUSTNETP",
+      "statement": "利润表",
+      "role": "利润/盈利类",
+      "role_hint": "关注盈利修复、趋势斜率、标准化意外和持续改善。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "持续经营净利润适合更干净的经常性盈利逻辑。",
+      "recommended_templates": [
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "Slope(TTM(X), 3)",
+        "TS_Surprise(X, 3, 6)",
+        "TS_Rank(YOY(X), 6)",
+        "TS_Drawdown(TTM(X), 6)",
+        "TS_ConsecutiveGrowth(YOY(X), 3)",
+        "TS_ZScore(Delta(TTM(X), 3), 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "IS_OTHEQUFVCHANGE",
+      "statement": "利润表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "IS_OTHERCOMPOSITEINCOME",
+      "statement": "利润表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "IS_OTHERNETREVENUE",
+      "statement": "利润表",
+      "role": "收入/需求类",
+      "role_hint": "关注增长、趋势、历史位置和超预期，描述需求扩张或收缩状态。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "非经营性净收益是聚合口径，有用但混合度高，保持谨慎。",
+      "recommended_templates": [
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "Slope(TTM(X), 3)",
+        "TS_Surprise(X, 3, 6)",
+        "TS_Rank(YOY(X), 6)",
+        "TS_Drawdown(TTM(X), 6)",
+        "TS_ConsecutiveGrowth(YOY(X), 3)",
+        "TS_ZScore(Delta(TTM(X), 3), 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "IS_OTHEROPERATINGINCOME",
+      "statement": "利润表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "focus",
+        "cautious"
+      ],
+      "note": "其他业务收入适合收入结构拆分分析。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "IS_OTHEROPERATIONALCOST",
+      "statement": "利润表",
+      "role": "成本费用/税费类",
+      "role_hint": "关注费用压力、成本压力、异常上升或下降，以及自身历史位置变化。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "其他业务成本适合成本结构拆分分析。",
+      "recommended_templates": [
+        "TTM(X)",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)",
+        "TS_ConsecutiveGrowth(X, 3)",
+        "Sub(0, YOY(X))"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "IS_OTHERREVENUE",
+      "statement": "利润表",
+      "role": "收入/需求类",
+      "role_hint": "关注增长、趋势、历史位置和超预期，描述需求扩张或收缩状态。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "Slope(TTM(X), 3)",
+        "TS_Surprise(X, 3, 6)",
+        "TS_Rank(YOY(X), 6)",
+        "TS_Drawdown(TTM(X), 6)",
+        "TS_ConsecutiveGrowth(YOY(X), 3)",
+        "TS_ZScore(Delta(TTM(X), 3), 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "IS_RANDD",
+      "statement": "利润表",
+      "role": "成本费用/税费类",
+      "role_hint": "关注费用压力、成本压力、异常上升或下降，以及自身历史位置变化。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "研发费用适合成长质量和费用结构分析。",
+      "recommended_templates": [
+        "TTM(X)",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)",
+        "TS_ConsecutiveGrowth(X, 3)",
+        "Sub(0, YOY(X))"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "IS_SALESCOST",
+      "statement": "利润表",
+      "role": "成本费用/税费类",
+      "role_hint": "关注费用压力、成本压力、异常上升或下降，以及自身历史位置变化。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "主营业务成本适合核心毛利和主营质量分析。",
+      "recommended_templates": [
+        "TTM(X)",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)",
+        "TS_ConsecutiveGrowth(X, 3)",
+        "Sub(0, YOY(X))"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "IS_SALESREVENUE",
+      "statement": "利润表",
+      "role": "收入/需求类",
+      "role_hint": "关注增长、趋势、历史位置和超预期，描述需求扩张或收缩状态。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "主营业务收入适合主营纯度和核心毛利分析。",
+      "recommended_templates": [
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "Slope(TTM(X), 3)",
+        "TS_Surprise(X, 3, 6)",
+        "TS_Rank(YOY(X), 6)",
+        "TS_Drawdown(TTM(X), 6)",
+        "TS_ConsecutiveGrowth(YOY(X), 3)",
+        "TS_ZScore(Delta(TTM(X), 3), 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "IS_TOTALADMINEXPENSE",
+      "statement": "利润表",
+      "role": "成本费用/税费类",
+      "role_hint": "关注费用压力、成本压力、异常上升或下降，以及自身历史位置变化。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "管理费用合计是较好的费用主干口径。",
+      "recommended_templates": [
+        "TTM(X)",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)",
+        "TS_ConsecutiveGrowth(X, 3)",
+        "Sub(0, YOY(X))"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "IS_TOTALCOMPOSITEINCOME",
+      "statement": "利润表",
+      "role": "待识别科目",
+      "role_hint": "字段语义置信度较低，优先使用通用的水平、同比、历史异常和历史位置模板，并在解释中保持谨慎。",
+      "governance_tags": [
+        "cautious"
+      ],
+      "note": "综合收益总额有意义，但不是纯经营 alpha 的首选主干。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "Delta(X, 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段需要谨慎使用，优先作为压力、风险、异常或质量修正观察。",
+        "该字段语义置信度较低；如果难以解释，请生成保守的通用变换，避免强行编造财务故事。"
+      ],
+      "confidence": "low"
+    },
+    {
+      "field": "IS_TOTALOCINIMPAIRLOSS",
+      "statement": "利润表",
+      "role": "风险扰动/非核心项目类",
+      "role_hint": "关注异常冲击、质量修正和风险暴露，不宜机械解释为优势。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "包含减值损失的营业总成本，适合含减值成本分析。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_RegressionResidual(X, 6)",
+        "TS_PastHighGap(X, 6)",
+        "TS_SignFlip(X, 1)",
+        "Sub(0, TS_ZScore(X, 6))"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "IS_TOTALOCNOINIMPAIRLOSS",
+      "statement": "利润表",
+      "role": "风险扰动/非核心项目类",
+      "role_hint": "关注异常冲击、质量修正和风险暴露，不宜机械解释为优势。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "不含减值损失的营业总成本，适合剥离减值扰动。",
+      "recommended_templates": [
+        "X",
+        "YOY(X)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_RegressionResidual(X, 6)",
+        "TS_PastHighGap(X, 6)",
+        "TS_SignFlip(X, 1)",
+        "Sub(0, TS_ZScore(X, 6))"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "IS_TOTALOPERATINGCOST",
+      "statement": "利润表",
+      "role": "成本费用/税费类",
+      "role_hint": "关注费用压力、成本压力、异常上升或下降，以及自身历史位置变化。",
+      "governance_tags": [
+        "focus"
+      ],
+      "note": "",
+      "recommended_templates": [
+        "TTM(X)",
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "TS_ZScore(X, 6)",
+        "TS_Rank(X, 6)",
+        "TS_PastHighGap(X, 6)",
+        "TS_ConsecutiveGrowth(X, 3)",
+        "Sub(0, YOY(X))"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "IS_TOTALOPERATINGREVENUE",
+      "statement": "利润表",
+      "role": "收入/需求类",
+      "role_hint": "关注增长、趋势、历史位置和超预期，描述需求扩张或收缩状态。",
+      "governance_tags": [
+        "focus",
+        "denominator"
+      ],
+      "note": "营业总收入口径更宽，使用时应和营业收入区分。",
+      "recommended_templates": [
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "Slope(TTM(X), 3)",
+        "TS_Surprise(X, 3, 6)",
+        "TS_Rank(YOY(X), 6)",
+        "TS_Drawdown(TTM(X), 6)",
+        "TS_ConsecutiveGrowth(YOY(X), 3)",
+        "TS_ZScore(Delta(TTM(X), 3), 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段常被用作规模锚；但作为本轮目标科目时，只研究其自身扩张速度、历史位置或异常变化。"
+      ],
+      "confidence": "normal"
+    },
+    {
+      "field": "IS_TOTALPROFIT",
+      "statement": "利润表",
+      "role": "利润/盈利类",
+      "role_hint": "关注盈利修复、趋势斜率、标准化意外和持续改善。",
+      "governance_tags": [
+        "focus",
+        "denominator"
+      ],
+      "note": "利润总额口径更宽，更容易受非核心扰动影响。",
+      "recommended_templates": [
+        "YOY(X)",
+        "Delta(YOY(X), 1)",
+        "Slope(TTM(X), 3)",
+        "TS_Surprise(X, 3, 6)",
+        "TS_Rank(YOY(X), 6)",
+        "TS_Drawdown(TTM(X), 6)",
+        "TS_ConsecutiveGrowth(YOY(X), 3)",
+        "TS_ZScore(Delta(TTM(X), 3), 6)"
+      ],
+      "cautions": [
+        "不要预设高分组或低分组一定更好，最终由回测验证。",
+        "严格单科目模式下，每个因子公式只能包含该目标科目，不要额外引入规模锚或其他财务字段。",
+        "该字段常被用作规模锚；但作为本轮目标科目时，只研究其自身扩张速度、历史位置或异常变化。"
+      ],
+      "confidence": "normal"
+    }
+  ]
+}

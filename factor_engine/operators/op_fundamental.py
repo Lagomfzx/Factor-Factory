@@ -105,16 +105,100 @@ def TS_Max(x, d): return x.rolling(_check_window(d)).max()
 def TS_Argmin(x, d): return x.rolling(_check_window(d)).apply(np.argmin) # 最小值发生的位置
 def TS_Argmax(x, d): return x.rolling(_check_window(d)).apply(np.argmax) # 最大值发生的位置
 
+def _rolling_last_rank(arr):
+    arr = np.asarray(arr, dtype=float)
+    last = arr[-1]
+    valid = arr[np.isfinite(arr)]
+    if not np.isfinite(last) or len(valid) == 0:
+        return np.nan
+    return np.sum(valid <= last) / len(valid)
+
+
+def _rolling_regression_slope(arr):
+    arr = np.asarray(arr, dtype=float)
+    mask = np.isfinite(arr)
+    if mask.sum() < 2:
+        return np.nan
+    t = np.arange(len(arr), dtype=float)[mask]
+    y = arr[mask]
+    t = t - t.mean()
+    y = y - y.mean()
+    denom = np.dot(t, t)
+    if denom <= EPS:
+        return np.nan
+    return float(np.dot(t, y) / denom)
+
+
+def _rolling_regression_residual(arr):
+    arr = np.asarray(arr, dtype=float)
+    if not np.isfinite(arr[-1]):
+        return np.nan
+    mask = np.isfinite(arr)
+    if mask.sum() < 2:
+        return np.nan
+    t_full = np.arange(len(arr), dtype=float)
+    t = t_full[mask]
+    y = arr[mask]
+    t_centered = t - t.mean()
+    y_centered = y - y.mean()
+    denom = np.dot(t_centered, t_centered)
+    if denom <= EPS:
+        return np.nan
+    beta = float(np.dot(t_centered, y_centered) / denom)
+    alpha = float(y.mean() - beta * t.mean())
+    fitted_last = alpha + beta * t_full[-1]
+    return float(arr[-1] - fitted_last)
+
+
+def TS_Rank(x, d): return x.rolling(_check_window(d)).apply(_rolling_last_rank, raw=True)
+def TS_ZScore(x, d): return Div(Sub(x, TS_Mean(x, d)), TS_Std(x, d))
+def TS_RegressionSlope(x, d): return x.rolling(_check_window(d)).apply(_rolling_regression_slope, raw=True)
+def TS_RegressionResidual(x, d): return x.rolling(_check_window(d)).apply(_rolling_regression_residual, raw=True)
+def TS_Surprise(x, change_d=3, vol_d=6):
+    change = Delta(TTM(x), change_d)
+    return Div(change, TS_Std(change, vol_d))
+
+def TS_Drawdown(x, d):
+    """当前值相对过去 d 个财报切片滚动高点的回撤幅度。"""
+    peak = TS_Max(x, d)
+    return Div(Sub(x, peak), Abs(peak))
+
+
+def TS_PastHighGap(x, d):
+    """当前值相对过去 d 期历史高点的距离；历史高点不包含当前期。"""
+    past_high = TS_Max(Delay(x, 1), d)
+    return Sub(x, past_high)
+
+
+def TS_PastLowGap(x, d):
+    """当前值相对过去 d 期历史低点的距离；历史低点不包含当前期。"""
+    past_low = TS_Min(Delay(x, 1), d)
+    return Sub(x, past_low)
+
+
+def TS_SignFlip(x, d=1):
+    """当前值与 d 期前符号是否相反；相反为 1，否则为 0。"""
+    previous = Delay(x, d)
+    valid = x.notna() & previous.notna()
+    return ((x * previous) < 0).astype(float).where(valid)
+
+
+def TS_ConsecutiveGrowth(x, d):
+    """过去 d 期中单期差分为正的比例，取值 0~1。"""
+    change = Delta(x, 1)
+    positive_delta = (change > 0).astype(float).where(change.notna())
+    return TS_Mean(positive_delta, d)
+
+
+def TS_PositiveDeltaRatio(x, d):
+    """TS_ConsecutiveGrowth 的直白别名：过去 d 期改善比例。"""
+    return TS_ConsecutiveGrowth(x, d)
+
+
 # --- [新增] 趋势与回归 (东吴Alpha158常用) ---
-# 注意：滚动回归计算较慢，如果追求速度可暂时不加，但对挖掘Alpha很重要
 def Slope(x, d):
-    """计算x在过去d天的线性回归斜率 (简单实现版)"""
-    w = _check_window(d)
-    # 使用 numpy polyfit 的简化版或 pandas 的 cov/var 实现
-    # Slope = Cov(x, t) / Var(t)
-    # 这里为了性能，通常简化为时序上的变化率，或者用 rolling_apply
-    # 既然是因子挖掘，建议先用简单的 Delta 代替，或者使用以下 pandas 实现：
-    return x.diff(w) / w # 简易版斜率，如果要精确回归斜率需用 rolling().apply
+    """过去 d 个财报切片的滚动线性回归斜率。"""
+    return TS_RegressionSlope(x, d)
 
 # 修正 TTM 逻辑 (重要提醒)
 # 如果你的数据是日频(每天都有值)，且进行了向前填充。
@@ -278,14 +362,90 @@ def TS_Max(x, d): return x.rolling(int(d)).max()
 def TS_Argmin(x, d): return x.rolling(_check_window(d)).apply(np.argmin, raw=True)
 def TS_Argmax(x, d): return x.rolling(_check_window(d)).apply(np.argmax, raw=True)
 
+def _rolling_last_rank(arr):
+    arr = np.asarray(arr, dtype=float)
+    last = arr[-1]
+    valid = arr[np.isfinite(arr)]
+    if not np.isfinite(last) or len(valid) == 0:
+        return np.nan
+    return np.sum(valid <= last) / len(valid)
+
+def _rolling_regression_slope(arr):
+    arr = np.asarray(arr, dtype=float)
+    mask = np.isfinite(arr)
+    if mask.sum() < 2:
+        return np.nan
+    t = np.arange(len(arr), dtype=float)[mask]
+    y = arr[mask]
+    t = t - t.mean()
+    y = y - y.mean()
+    denom = np.dot(t, t)
+    if denom <= EPS:
+        return np.nan
+    return float(np.dot(t, y) / denom)
+
+def _rolling_regression_residual(arr):
+    arr = np.asarray(arr, dtype=float)
+    if not np.isfinite(arr[-1]):
+        return np.nan
+    mask = np.isfinite(arr)
+    if mask.sum() < 2:
+        return np.nan
+    t_full = np.arange(len(arr), dtype=float)
+    t = t_full[mask]
+    y = arr[mask]
+    t_centered = t - t.mean()
+    y_centered = y - y.mean()
+    denom = np.dot(t_centered, t_centered)
+    if denom <= EPS:
+        return np.nan
+    beta = float(np.dot(t_centered, y_centered) / denom)
+    alpha = float(y.mean() - beta * t.mean())
+    fitted_last = alpha + beta * t_full[-1]
+    return float(arr[-1] - fitted_last)
+
+def TS_Rank(x, d): return x.rolling(_check_window(d)).apply(_rolling_last_rank, raw=True)
+def TS_ZScore(x, d): return Div(Sub(x, TS_Mean(x, d)), TS_Std(x, d))
+def TS_RegressionSlope(x, d): return x.rolling(_check_window(d)).apply(_rolling_regression_slope, raw=True)
+def TS_RegressionResidual(x, d): return x.rolling(_check_window(d)).apply(_rolling_regression_residual, raw=True)
+def TS_Surprise(x, change_d=3, vol_d=6):
+    change = Delta(TTM(x), change_d)
+    return Div(change, TS_Std(change, vol_d))
+
+def TS_Drawdown(x, d):
+    """当前值相对过去 d 个财报切片滚动高点的回撤幅度。"""
+    peak = TS_Max(x, d)
+    return Div(Sub(x, peak), Abs(peak))
+
+def TS_PastHighGap(x, d):
+    """当前值相对过去 d 期历史高点的距离；历史高点不包含当前期。"""
+    past_high = TS_Max(Delay(x, 1), d)
+    return Sub(x, past_high)
+
+def TS_PastLowGap(x, d):
+    """当前值相对过去 d 期历史低点的距离；历史低点不包含当前期。"""
+    past_low = TS_Min(Delay(x, 1), d)
+    return Sub(x, past_low)
+
+def TS_SignFlip(x, d=1):
+    """当前值与 d 期前符号是否相反；相反为 1，否则为 0。"""
+    previous = Delay(x, d)
+    valid = x.notna() & previous.notna()
+    return ((x * previous) < 0).astype(float).where(valid)
+
+def TS_ConsecutiveGrowth(x, d):
+    """过去 d 期中单期差分为正的比例，取值 0~1。"""
+    change = Delta(x, 1)
+    positive_delta = (change > 0).astype(float).where(change.notna())
+    return TS_Mean(positive_delta, d)
+
+def TS_PositiveDeltaRatio(x, d):
+    """TS_ConsecutiveGrowth 的直白别名：过去 d 期改善比例。"""
+    return TS_ConsecutiveGrowth(x, d)
+
 def Slope(x, d):
-    """计算x在过去d天的线性回归斜率 (简单实现版)"""
-    w = _check_window(d)
-    # 使用 numpy polyfit 的简化版或 pandas 的 cov/var 实现
-    # Slope = Cov(x, t) / Var(t)
-    # 这里为了性能，通常简化为时序上的变化率，或者用 rolling_apply
-    # 既然是因子挖掘，建议先用简单的 Delta 代替，或者使用以下 pandas 实现：
-    return x.diff(w) / w # 简易版斜率，如果要精确回归斜率需用 rolling().apply
+    """过去 d 个财报切片的滚动线性回归斜率。"""
+    return TS_RegressionSlope(x, d)
 
 # 兼容性别名
 delta = Delta
