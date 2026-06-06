@@ -18,7 +18,7 @@ class FactoryConfig:
 
         self.llm_output_dir = os.path.join(self.base_dir, "llm_output", f"llm_output_{self.version}")
         self.combined_output_dir = os.path.join(self.base_dir, "llm_output", f"combined_{self.version}")
-        self.factor_out_dir = os.path.join(self.base_dir, "factor", f"鏃ラ鍥犲瓙_{self.version}")
+        self.factor_out_dir = os.path.join(self.base_dir, "factor", f"日频因子_{self.version}")
         self.remote_result_dir = os.path.join(self.base_dir, "remote_json")
 
         self.registry_csv = os.path.join(self.base_dir, "job_id_output", f"job_id_output_{self.version}.csv")
