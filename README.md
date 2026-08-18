@@ -16,19 +16,14 @@
 
 ## 研究闭环
 
-~~~mermaid
-flowchart LR
-    A["研究主题与历史记忆"] --> B["LLM 多阶段生成"]
-    B --> C["代码解析与纠错"]
-    C --> D["本地因子计算"]
-    D --> E["远程评估平台"]
-    E --> F["Judge 质量初审"]
-    F -->|KEEP| G["精品因子库"]
-    F -->|OPTIMIZE| H["Doctor / Coder / Referee 进化循环"]
-    H --> E
-    B --> I["公式规范化与 Hash 去重"]
-    G --> J["标签、研究记录与版本化注册表"]
-~~~
+![Factor Factory：从研究命题到精品因子库](docs/factor-factory-workflow.svg)
+
+<details>
+<summary>文字版流程（便于检索与无障碍阅读）</summary>
+
+研究主题与历史记忆 → Researcher 设计因子逻辑 → Coder 生成公式与代码 → Reviewer 执行纠错 → 本地沙盒计算 → 远程平台评估 → Judge 执行 KEEP / OPTIMIZE 分流。KEEP 因子进入精品库；OPTIMIZE 因子进入 Doctor、Coder 与 Referee 的迭代优化循环。
+
+</details>
 
 ## 核心设计
 
