@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="960" viewBox="0 0 1600 960" role="img" aria-labelledby="title desc">
+  <title id="title">Factor Factory research workflow</title>
+  <desc id="desc">LLM-assisted factor generation, sandbox execution, remote evaluation, judge screening, iterative optimization and factor registry.</desc>
+  <defs>
+    <style>
+      .bg{fill:#f8fafc}.panel{fill:#fff;stroke:#cbd5e1;stroke-width:2}.panel-blue{fill:#eff6ff;stroke:#93c5fd;stroke-width:2}.panel-teal{fill:#f0fdfa;stroke:#5eead4;stroke-width:2}.panel-amber{fill:#fffbeb;stroke:#fcd34d;stroke-width:2}.node{fill:#fff;stroke:#334155;stroke-width:2}.llm{fill:#dbeafe;stroke:#2563eb;stroke-width:2}.judge{fill:#fef3c7;stroke:#d97706;stroke-width:2}.store{fill:#dcfce7;stroke:#16a34a;stroke-width:2}.platform{fill:#ede9fe;stroke:#7c3aed;stroke-width:2}.decision{fill:#fff7ed;stroke:#ea580c;stroke-width:2}.title{font:700 30px -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;fill:#0f172a}.section{font:700 20px -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;fill:#334155}.text{font:600 17px -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;fill:#0f172a}.small{font:500 14px -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;fill:#475569}.label{font:600 14px -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;fill:#334155}.arrow{fill:none;stroke:#475569;stroke-width:2.5;marker-end:url(#arrow)}.dash{fill:none;stroke:#64748b;stroke-width:2;stroke-dasharray:8 7;marker-end:url(#arrow)}
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#475569"/></marker>
+  </defs>
+  <rect class="bg" width="1600" height="960" rx="28"/>
+  <text class="title" x="70" y="60">Factor Factory｜从研究命题到精品因子库</text>
+  <text class="small" x="70" y="88">生成、执行、评估、筛选与迭代优化的完整闭环</text>
+
+  <rect class="panel-blue" x="55" y="120" width="415" height="745" rx="24"/>
+  <text class="section" x="80" y="160">① 多阶段生成</text>
+  <rect class="node" x="105" y="190" width="315" height="64" rx="16"/>
+  <text class="text" x="262" y="217" text-anchor="middle">研究主题 + 历史记忆</text>
+  <text class="small" x="262" y="240" text-anchor="middle">风格约束 · 字段约束 · 去重上下文</text>
+  <path class="arrow" d="M262 254 V288"/>
+  <rect class="llm" x="105" y="290" width="315" height="74" rx="18"/>
+  <text class="text" x="262" y="319" text-anchor="middle">LLM 1｜Researcher</text>
+  <text class="small" x="262" y="344" text-anchor="middle">提出因子逻辑与经济解释</text>
+  <path class="arrow" d="M262 364 V398"/>
+  <rect class="llm" x="105" y="400" width="315" height="74" rx="18"/>
+  <text class="text" x="262" y="429" text-anchor="middle">LLM 2｜Coder</text>
+  <text class="small" x="262" y="454" text-anchor="middle">生成受控算子公式与代码</text>
+  <path class="arrow" d="M262 474 V508"/>
+  <rect class="llm" x="105" y="510" width="315" height="74" rx="18"/>
+  <text class="text" x="262" y="539" text-anchor="middle">LLM 3｜Reviewer</text>
+  <text class="small" x="262" y="564" text-anchor="middle">语法检查 · 执行纠错 · 格式化</text>
+  <path class="arrow" d="M262 584 V625"/>
+  <rect class="node" x="105" y="628" width="315" height="78" rx="18"/>
+  <text class="text" x="262" y="658" text-anchor="middle">候选因子批次</text>
+  <text class="small" x="262" y="683" text-anchor="middle">公式 Hash 去重 + 生成记录</text>
+  <path class="arrow" d="M262 706 V750"/>
+  <rect class="store" x="105" y="752" width="315" height="76" rx="18"/>
+  <text class="text" x="262" y="782" text-anchor="middle">主注册表</text>
+  <text class="small" x="262" y="807" text-anchor="middle">公式 · 代码 · 标签 · 版本</text>
+
+  <rect class="panel" x="505" y="120" width="445" height="745" rx="24"/>
+  <text class="section" x="530" y="160">② 执行与结构化评估</text>
+  <rect class="platform" x="560" y="205" width="335" height="92" rx="18"/>
+  <text class="text" x="727" y="239" text-anchor="middle">本地沙盒计算</text>
+  <text class="small" x="727" y="265" text-anchor="middle">可执行性检查 · 因子实体生成</text>
+  <path class="arrow" d="M727 297 V350"/>
+  <rect class="platform" x="560" y="352" width="335" height="92" rx="18"/>
+  <text class="text" x="727" y="386" text-anchor="middle">远程评估平台</text>
+  <text class="small" x="727" y="412" text-anchor="middle">提交任务 · 轮询结果 · 指标清洗</text>
+  <path class="arrow" d="M727 444 V498"/>
+  <rect class="node" x="545" y="500" width="365" height="116" rx="20"/>
+  <text class="text" x="727" y="533" text-anchor="middle">统一评估上下文</text>
+  <text class="small" x="727" y="559" text-anchor="middle">job_id + 生成记录 + 因子代码</text>
+  <text class="small" x="727" y="584" text-anchor="middle">回测指标 + 研究逻辑</text>
+  <path class="arrow" d="M727 616 V671"/>
+  <rect class="judge" x="560" y="674" width="335" height="92" rx="46"/>
+  <text class="text" x="727" y="708" text-anchor="middle">LLM 4｜Judge</text>
+  <text class="small" x="727" y="735" text-anchor="middle">KEEP / OPTIMIZE 初审分流</text>
+  <path class="arrow" d="M420 667 C505 667 490 251 560 251"/>
+  <text class="label" x="485" y="470" transform="rotate(-90 485 470)" text-anchor="middle">批量执行</text>
+
+  <rect class="panel-teal" x="985" y="120" width="560" height="745" rx="24"/>
+  <text class="section" x="1010" y="160">③ 进化优化与入库</text>
+  <path class="arrow" d="M895 720 C985 720 970 235 1060 235"/>
+  <text class="label" x="958" y="480" transform="rotate(-90 958 480)" text-anchor="middle">OPTIMIZE</text>
+  <rect class="llm" x="1060" y="195" width="365" height="78" rx="18"/>
+  <text class="text" x="1242" y="225" text-anchor="middle">LLM 5｜Doctor</text>
+  <text class="small" x="1242" y="250" text-anchor="middle">诊断缺陷并给出优化处方</text>
+  <path class="arrow" d="M1242 273 V315"/>
+  <rect class="llm" x="1060" y="318" width="365" height="78" rx="18"/>
+  <text class="text" x="1242" y="348" text-anchor="middle">LLM 6｜Coder</text>
+  <text class="small" x="1242" y="373" text-anchor="middle">生成可执行的因子变体</text>
+  <path class="arrow" d="M1242 396 V438"/>
+  <rect class="platform" x="1060" y="440" width="365" height="78" rx="18"/>
+  <text class="text" x="1242" y="470" text-anchor="middle">再次计算与评估</text>
+  <text class="small" x="1242" y="495" text-anchor="middle">沙盒 → 远程平台 → 指标回收</text>
+  <path class="arrow" d="M1242 518 V558"/>
+  <path class="decision" d="M1242 560 L1385 632 L1242 704 L1099 632 Z"/>
+  <text class="text" x="1242" y="625" text-anchor="middle">Referee</text>
+  <text class="small" x="1242" y="648" text-anchor="middle">KEEP / EVOLVE / PIVOT / TERMINATE</text>
+  <path class="arrow" d="M1242 704 V754"/>
+  <rect class="store" x="1060" y="756" width="365" height="72" rx="18"/>
+  <text class="text" x="1242" y="786" text-anchor="middle">精品因子库</text>
+  <text class="small" x="1242" y="810" text-anchor="middle">保留因子 + 标签 + 完整进化轨迹</text>
+  <path class="dash" d="M1099 632 C1005 632 1000 235 1060 235"/>
+  <text class="label" x="1018" y="425" transform="rotate(-90 1018 425)" text-anchor="middle">未满足条件：继续迭代（最多 3 轮）</text>
+  <path class="arrow" d="M895 690 C970 690 985 792 1060 792"/>
+  <text class="label" x="975" y="775" text-anchor="middle">KEEP</text>
+
+  <path class="dash" d="M1060 479 C975 479 950 398 895 398"/>
+  <text class="small" x="800" y="915" text-anchor="middle">公开展示版：隐藏专有数据、内部接口与未获授权的研究结果</text>
+</svg>
